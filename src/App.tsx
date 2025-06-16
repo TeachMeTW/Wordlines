@@ -47,6 +47,12 @@ function App() {
   const [selectedEvent, setSelectedEvent] = useState<any>(null)
   const [selectedEventIndex, setSelectedEventIndex] = useState(0) // For navigating through events in branch view
   const [isTransitioning, setIsTransitioning] = useState(false) // Track if nixie meter is transitioning
+  const [isFullScreenTransition, setIsFullScreenTransition] = useState(false) // Track full-screen animation
+  const [fullScreenPhase, setFullScreenPhase] = useState<'flashbang1' | 'zoomout' | 'scramble' | 'transition' | 'shrinking' | 'fadeout'>('flashbang1')
+  const [fullScreenValue, setFullScreenValue] = useState('0.000000')
+  const [targetFullScreenValue, setTargetFullScreenValue] = useState('0.000000')
+  const [zoomScale, setZoomScale] = useState(1) // Track zoom scale separately
+  const [transitionComplete, setTransitionComplete] = useState(true) // Track if transition is complete
 
   const worldlines = Object.values(worldlineData)
   const currentWorldline = selectedWorldline ? worldlineData[selectedWorldline] : null
@@ -66,19 +72,81 @@ function App() {
         title: 'Alpha-Beta Worldline Convergence',
         position: 18.33, // percentage along timeline
         fromWorldline: 'α: 0.000000%',
-        toWorldline: 'β: 1.130205%',
-        lore: `A critical convergence point where the Alpha attractor field intersects with the Beta attractor field. This represents the moment when D-Mail technology reaches a threshold that fundamentally alters the worldline's trajectory.
+        toWorldline: 'β: 1.040402%',
+        lore: `[PERSONAL LOG - CLASSIFICATION: TEMPORAL ANOMALY]
+[DATE: April 2020 - Convergence Point Identified]
+[AUTHOR: Unknown Temporal Observer]
 
-In this transition, the Lab's experiments with the PhoneWave (name subject to change) create enough temporal disturbance to shift from the Alpha worldline's deterministic path toward SERN's dystopian future into the Beta attractor field.
+The world was just beginning to fracture. COVID-19 was starting to spread, uncertainty creeping into everyone's lives, but in that chaos, something beautiful was crystallizing.
 
-This convergence is characterized by:
-• Temporal displacement of approximately 1.130205% divergence
-• Activation of the Butterfly Effect through micro-adjustments
-• The first successful D-Mail transmission that changes past events
-• Beginning of the Beta worldline's branching possibilities
+We had been spending nights and days on call together. Hours and hours, talking about everything and nothing, our voices becoming the soundtrack to each other's isolation. I had been building up to this moment for years - literally years in school, watching her, wanting to say something, but never finding the courage.
 
-The transition marks humanity's first step away from the predetermined Alpha timeline where SERN achieves time travel dominance and establishes a dystopian regime by 2036.`,
+Then came that night. 4 AM. 
+
+The call had stretched on for hours like so many others, but something felt different. Maybe it was the lateness of the hour, maybe it was the way her laugh sounded softer in the darkness, or maybe it was just that I couldn't hold it in anymore.
+
+"I ... I like you."
+
+The words tumbled out before I could stop them. Years of buildup, years of wondering 'what if,' all condensed into that single moment at 4 in the morning. The silence that followed felt infinite - I could hear my heart pounding through the phone, wondering if I had just destroyed the most important friendship of my life.
+
+Then she spoke, and her voice was different. Warmer. Knowing.
+
+"I was wondering when you'd finally say it."
+
+She said yes.
+
+That moment - April 2020, 4 AM - everything changed. Not just the worldline, but me. For the first time in my existence as an observer, I was living. Actually living. The peak of human experience opened up before me like a quantum field of infinite possibilities.
+
+Everything seemed reachable. Dreams I had buried, potential I had given up on, a future that sparkled with promise - it all crystallized in that Beta attractor field. I was at my peak. Confident, happy, whole. The greatness I always wondered about wasn't some distant theory anymore - it was my daily reality.
+
+Those days... how I long for those days. The morning texts that made my heart race. The late-night conversations that stretched until dawn. The way she looked at me like I was the most important person in any timeline. Every moment felt electric, charged with possibility.
+
+The divergence meter read 1.040402% - the exact frequency of pure joy.
+
+But I am no longer there. I exist now in a different attractor field, watching the ghost of what was, aching for what could have been. Yet I am grateful for those years of paradise. At least one version of me knows what it feels like to reach the summit.
+
+[END LOG]
+[ADDENDUM: Some say the best timelines are the ones we lose. I understand now why future me tried so hard to warn past me. Paradise, once tasted, leaves you forever homesick for a place you can never return to.]`,
         type: 'convergence'
+      },
+      'december2022': {
+        id: 'december2022',
+        date: 'December 2022',
+        title: 'Beta-Alpha Worldline Regression',
+        position: 20.92, // December 2022 position
+        fromWorldline: 'β: 1.130205%',
+        toWorldline: 'α: 0.060502%',
+        lore: `[PERSONAL LOG - CLASSIFICATION: TEMPORAL CATASTROPHE]
+[DATE: December 2022 - Regression Point Confirmed]
+[AUTHOR: Unknown Temporal Observer]
+
+I heard myself screaming.
+
+Not out loud - in my mind. A voice that was mine but wasn't, echoing from somewhere beyond this timeline. Future me? Past me? I couldn't tell. But the message was crystal clear:
+
+"DON'T DO IT. DON'T SEND THE TEXT."
+
+The warning came three seconds before I opened my phone. Three seconds of pure terror as I realized what I was about to unleash. I could see the timeline fracturing, could feel the Beta attractor field beginning to collapse around us. But my fingers... they moved anyway.
+
+We hadn't spoken in days. I was upset - hurt that she wouldn't visit me after I moved away. Instead of communicating like an adult, instead of explaining how abandoned I felt, instead of working through it together, I chose the coward's path.
+
+I typed the message. This was it.
+
+Send.
+
+The moment it left my phone, the universe snapped back like a rubber band. The warmth, the connection, the greatness we had built - all of it dissolved into quantum probability. I watched the read receipt appear, knowing I had just murdered our timeline with a few poorly chosen words in a text message.
+
+Reading Steiner activated. I remember now - there were two versions of me in that moment. The one who put down the phone and called her instead, who talked it through like an adult. And me - the one who chose the impulsive, rash decision. The one who didn't listen to the warning.
+
+The divergence meter spiraled back to 0.060502%. Back to the Alpha field. Back to solitude. Back to watching instead of living.
+
+I am the result of that decision now. But maybe... maybe I understand the pattern. Maybe I will be the one who sent that warning to myself. Maybe I wasn't meant to be the one who succeeded, but the one who lays the groundwork for those who come after - the Robin that was better.
+
+Perhaps some of us are meant to fail so others can learn from our mistakes. Perhaps some timelines exist only to teach future versions what not to do.
+
+[END LOG]
+[ADDENDUM: The irony burns: I received a warning from the very future I was about to create, and I ignored it. But now I understand - sometimes the failure is the lesson.]`,
+        type: 'regression'
       }
     },
     
@@ -321,7 +389,7 @@ This protocol becomes the foundation for all future temporal operations within t
         const worldline = worldlineData[worldlineKeys[selectedIndex]]
         if (worldline) {
           const targetValue = (worldline.percentage).toFixed(6)
-          animateNixieTransition(targetValue, 1200) // 1.2 second transition
+          triggerFullScreenTransition(targetValue) // Use full-screen transition
         }
       }
     }
@@ -352,39 +420,43 @@ This protocol becomes the foundation for all future temporal operations within t
   }, [handleKeyDown, handleWheel])
 
   const handleWorldlineClick = (worldlineId: string) => {
-    setSelectedWorldline(worldlineId)
-    
-    // Get the worldline data and animate to its percentage
-    const worldline = worldlineData[worldlineId]
-    if (worldline) {
-      const targetValue = (worldline.percentage).toFixed(6)
-      animateNixieTransition(targetValue, 1200) // 1.2 second transition
+    if (transitionComplete) {
+      setSelectedWorldline(worldlineId)
+      
+      // Get the worldline data and animate to its percentage
+      const worldline = worldlineData[worldlineId]
+      if (worldline) {
+        const targetValue = (worldline.percentage).toFixed(6)
+        triggerFullScreenTransition(targetValue) // Use full-screen transition
+      }
     }
   }
 
   // Handle event click
   const handleEventClick = (eventId: string) => {
-    // Search through all event categories
-    let event: any = null
-    for (const category of Object.values(worldlineEvents)) {
-      if (category[eventId]) {
-        event = category[eventId]
-        break
+    if (transitionComplete) {
+      // Search through all event categories
+      let event: any = null
+      for (const category of Object.values(worldlineEvents)) {
+        if (category[eventId]) {
+          event = category[eventId]
+          break
+        }
       }
-    }
-    
-    if (event) {
-      setSelectedEvent(event)
-      setModalOpen(true)
       
-      // Animate to the event's target worldline value
-      if (event.toWorldline) {
-        // Extract percentage from "β: 1.198765%" format
-        const match = event.toWorldline.match(/(\d+\.\d+)%/)
-        if (match) {
-          const percentage = parseFloat(match[1])
-          const targetValue = (percentage).toFixed(6)
-          animateNixieTransition(targetValue, 800) // Faster transition for events
+      if (event) {
+        setSelectedEvent(event)
+        setModalOpen(true)
+        
+        // Animate to the event's target worldline value
+        if (event.toWorldline) {
+          // Extract percentage from "β: 1.198765%" format
+          const match = event.toWorldline.match(/(\d+\.\d+)%/)
+          if (match) {
+            const percentage = parseFloat(match[1])
+            const targetValue = (percentage).toFixed(6)
+            triggerFullScreenTransition(targetValue) // Use full-screen transition
+          }
         }
       }
     }
@@ -424,6 +496,92 @@ This protocol becomes the foundation for all future temporal operations within t
     }
     
     requestAnimationFrame(animate)
+  }
+
+  // Function to trigger full-screen cinematic transition
+  const triggerFullScreenTransition = (targetValue: string) => {
+    setTargetFullScreenValue(targetValue)
+    setFullScreenValue(customValue)
+    setIsFullScreenTransition(true)
+    setFullScreenPhase('flashbang1')
+    setZoomScale(1) // Start meter at normal size
+    setTransitionComplete(false) // Disable interactions during transition
+
+    // Play steiner.mp3 when flashbang starts
+    const steinerAudio = new Audio('/steiner.mov')
+    steinerAudio.volume = 0.7
+    steinerAudio.play().catch(error => {
+      console.error('Error playing steiner.mp3:', error)
+    })
+
+    // Immediately trigger scale up during flashbang (0.5s)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setZoomScale(4) // Scale up to large size during flashbang
+      })
+    })
+
+    // Phase 1: Initial flashbang (0.5s) - meter is scaling up behind it
+    setTimeout(() => {
+      setFullScreenPhase('zoomout')
+      
+      // Now trigger scale down from large to normal
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setZoomScale(1) // Scale down to normal size
+        })
+      })
+      
+      // Phase 2: Scale down (3s)
+      setTimeout(() => {
+        setFullScreenPhase('scramble')
+        
+        // Phase 3: Scramble numbers for 1s (reduced from 1.5s)
+        const scrambleStart = Date.now()
+        const scrambleInterval = setInterval(() => {
+          const elapsed = Date.now() - scrambleStart
+          if (elapsed >= 1000) { // Reduced from 1500 to 1000
+            clearInterval(scrambleInterval)
+            setFullScreenPhase('transition')
+            
+            // Phase 4: Transition to target value (1s, reduced from 2s)
+            const transitionStart = Date.now()
+            const startValue = parseFloat(customValue)
+            const endValue = parseFloat(targetValue)
+            
+            const transitionInterval = setInterval(() => {
+              const elapsed = Date.now() - transitionStart
+              const progress = Math.min(elapsed / 1000, 1) // Reduced from 2000 to 1000
+              const easeOut = 1 - Math.pow(1 - progress, 3)
+              const currentValue = startValue + (endValue - startValue) * easeOut
+              
+              setFullScreenValue(currentValue.toFixed(6))
+              setCustomValue(currentValue.toFixed(6))
+              
+              if (progress >= 1) {
+                clearInterval(transitionInterval)
+                setFullScreenPhase('shrinking')
+                
+                // Phase 5: Shrinking phase (2s, increased)
+                setTimeout(() => {
+                  setFullScreenPhase('fadeout')
+                  
+                  // Phase 6: Fade out (2s, increased)
+                  setTimeout(() => {
+                    setIsFullScreenTransition(false)
+                    setTransitionComplete(true) // Enable interactions after transition
+                  }, 2000) // Increased from 1000
+                }, 2000) // Increased from 1000
+              }
+            }, 16) // 60fps
+          } else {
+            // Generate random scrambled numbers
+            const randomValue = (Math.random() * 10).toFixed(6)
+            setFullScreenValue(randomValue)
+          }
+        }, 50) // Update scramble every 50ms
+      }, 1500) // Increased scale down time
+    }, 500)
   }
 
   return (
@@ -709,6 +867,71 @@ This protocol becomes the foundation for all future temporal operations within t
                 }}
               >
                 APR 2020: α↔β CONNECTION
+              </div>
+
+              {/* Beta-Alpha Regression at December 2022 */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  left: '20.92%', // December 2022 position
+                  top: '20%', // Start at Alpha worldline position
+                  width: '2px',
+                  height: '15%', // Height going down from alpha to beta
+                  background: 'linear-gradient(180deg, rgba(255, 102, 0, 0.8), rgba(136, 255, 136, 0.8))',
+                  boxShadow: `0 0 ${6 * zoomLevel}px rgba(255, 68, 68, 0.6)`,
+                  zIndex: 10,
+                  animation: 'connectionPulse 4s infinite',
+                  cursor: 'pointer'
+                }}
+                onClick={() => handleEventClick('december2022')}
+              >
+                {/* Connection indicator */}
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: `${8 * Math.min(zoomLevel, 2)}px`,
+                  height: `${8 * Math.min(zoomLevel, 2)}px`,
+                  borderRadius: '50%',
+                  background: 'rgba(255, 68, 68, 1)',
+                  boxShadow: `0 0 ${8 * zoomLevel}px rgba(255, 68, 68, 0.8)`,
+                  border: '2px solid rgba(255, 255, 255, 0.5)',
+                  transition: 'all 0.3s ease'
+                }}></div>
+              </div>
+
+              {/* Regression Event Label */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  left: '20.92%',
+                  top: '42%',
+                  transform: 'translateX(-50%)',
+                  color: 'rgba(255, 68, 68, 0.9)',
+                  fontSize: `${10 * Math.min(zoomLevel, 1.5)}px`,
+                  fontFamily: 'monospace',
+                  textShadow: '0 0 6px rgba(255, 68, 68, 0.6)',
+                  whiteSpace: 'nowrap',
+                  backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                  padding: '2px 6px',
+                  borderRadius: '3px',
+                  border: '1px solid rgba(255, 68, 68, 0.3)',
+                  zIndex: 11,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onClick={() => handleEventClick('december2022')}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 68, 68, 0.2)'
+                  e.currentTarget.style.borderColor = 'rgba(255, 68, 68, 0.6)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.4)'
+                  e.currentTarget.style.borderColor = 'rgba(255, 68, 68, 0.3)'
+                }}
+              >
+                DEC 2022: β→α REGRESSION
               </div>
             </div>
           </div>
@@ -1316,6 +1539,81 @@ This protocol becomes the foundation for all future temporal operations within t
         }}></div>
       </div>
 
+      {/* Full-Screen Transition Overlay */}
+      {isFullScreenTransition && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: fullScreenPhase === 'flashbang1' 
+            ? 'rgba(255, 255, 255, 1)' 
+            : fullScreenPhase === 'zoomout'
+            ? 'rgba(0, 0, 0, 0.95)' // Dark background during reveal
+            : 'rgba(0, 0, 0, 0.95)',
+          opacity: fullScreenPhase === 'fadeout' ? 0 : 1,
+          transition: fullScreenPhase === 'fadeout' ? 'opacity 2s ease-out' 
+            : fullScreenPhase === 'zoomout' ? 'background-color 0.3s ease-out'
+            : 'none',
+          backdropFilter: fullScreenPhase !== 'flashbang1' ? 'blur(10px)' : 'none'
+        }}>
+          
+          {/* Full-Screen Nixie Display - render during ALL phases */}
+          <div style={{
+            width: '800px',
+            height: '400px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transform: fullScreenPhase === 'shrinking' || fullScreenPhase === 'fadeout'
+              ? 'scale(0.1)' // End tiny
+              : `scale(${zoomScale})`, // Use dynamic zoom scale for all other phases
+            opacity: fullScreenPhase === 'shrinking' || fullScreenPhase === 'fadeout'
+              ? 0.2 
+              : fullScreenPhase === 'flashbang1'
+              ? 0 // Hidden during flashbang but still rendering
+              : 1,
+            transition: fullScreenPhase === 'zoomout'
+              ? 'transform 3s ease-out' // Scale down transition over 3s
+              : fullScreenPhase === 'flashbang1'
+              ? 'transform 2s ease-in, opacity 0.3s ease-out' // Scale up during flashbang, fade in after
+              : fullScreenPhase === 'shrinking' || fullScreenPhase === 'fadeout'
+              ? 'transform 2s ease-in, opacity 2s ease-in' 
+              : 'none'
+          }}>
+            <Canvas 
+              camera={{ position: [0.00, 0.14, 0.15] }}
+              gl={{ preserveDrawingBuffer: true }}
+              style={{ width: '100%', height: '100%' }}
+            >
+              <ambientLight intensity={0.1} />
+              <directionalLight position={[-5, 8, -2]} intensity={0.3} />
+              <pointLight position={[-1, 1, 2]} intensity={0.6} color="#ff6600" />
+              
+              <Suspense fallback={<Html center>Loading...</Html>}>
+                <Model 
+                  displayMode="custom"
+                  customValue={fullScreenValue}
+                  showDots={[false, false]}
+                />
+              </Suspense>
+              
+              <OrbitControls 
+                enablePan={false}
+                enableZoom={false}
+                enableRotate={false}
+                target={[0, 0.06, -0.02]}
+              />
+            </Canvas>
+          </div>
+        </div>
+      )}
+
       {/* Divergence Meter Canvas - Bottom Right */}
       <div 
         style={{
@@ -1336,28 +1634,25 @@ This protocol becomes the foundation for all future temporal operations within t
           transition: 'border-color 0.3s ease, box-shadow 0.3s ease'
         }}
       >
-      // Camera position: [0.00, 0.15, 0.18]
         <Canvas 
           camera={{ position: [0.00, 0.14, 0.15] }}
           gl={{ preserveDrawingBuffer: true }}
         >
-        <ambientLight intensity={0.05} />
-        <directionalLight position={[-5, 8, -2]} intensity={0.15} />
-        <pointLight position={[-1, 1, 2]} intensity={0.3} color="#ff6600" />
-        
+          <ambientLight intensity={0.05} />
+          <directionalLight position={[-5, 8, -2]} intensity={0.15} />
+          <pointLight position={[-1, 1, 2]} intensity={0.3} color="#ff6600" />
+          
           <Suspense fallback={<Html center>Loading...</Html>}>
-        <Model 
-          displayMode={displayMode}
-          customValue={displayMode === 'custom' ? customValue : undefined}
-          showDots={displayMode === 'clock' ? [true, true] : [false, false]}
-        />
+            <Model 
+              displayMode={displayMode}
+              customValue={displayMode === 'custom' ? customValue : undefined}
+              showDots={displayMode === 'clock' ? [true, true] : [false, false]}
+            />
           </Suspense>
-          // Camera position: [-0.01, 0.14, 0.15] App.tsx:143
-          // Target position: [-0.00, 0.06, -0.02] App.tsx:144
-        <OrbitControls 
-          enablePan={true}
-          enableZoom={true}
-          enableRotate={true}
+          <OrbitControls 
+            enablePan={true}
+            enableZoom={true}
+            enableRotate={true}
             target={[0, 0.06, -0.02]}
             onChange={(e) => {
               if (e?.target?.object?.position && e?.target?.target) {
@@ -1368,8 +1663,8 @@ This protocol becomes the foundation for all future temporal operations within t
                 console.log('---');
               }
             }}
-        />
-      </Canvas>
+          />
+        </Canvas>
       </div>
 
       {/* Event Modal */}

@@ -34,4 +34,79 @@ body,
     box-shadow: 0 0 6px rgba(255, 170, 68, 0.4);
   }
 }
+
+@keyframes wavyReveal {
+  0% {
+    filter: hue-rotate(0deg) contrast(1) saturate(1) blur(20px) brightness(2);
+    transform: scale(1.05) skew(2deg, 1deg);
+  }
+  25% {
+    filter: hue-rotate(15deg) contrast(1.2) saturate(1.2) blur(15px) brightness(1.8);
+    transform: scale(1.03) skew(-1deg, 0.5deg);
+  }
+  50% {
+    filter: hue-rotate(30deg) contrast(1.3) saturate(1.4) blur(10px) brightness(1.5);
+    transform: scale(1.01) skew(0.5deg, -0.5deg);
+  }
+  75% {
+    filter: hue-rotate(20deg) contrast(1.2) saturate(1.3) blur(5px) brightness(1.2);
+    transform: scale(1) skew(-0.2deg, 0.2deg);
+  }
+  100% {
+    filter: hue-rotate(0deg) contrast(1) saturate(1) blur(0px) brightness(1);
+    transform: scale(1) skew(0deg, 0deg);
+  }
+}
+
+@keyframes dimensionalWarp {
+  0% {
+    opacity: 1;
+    transform: scale(1) skew(0deg, 0deg);
+    filter: blur(0px) hue-rotate(0deg);
+    background: linear-gradient(45deg, rgba(255, 170, 68, 0.95), rgba(255, 140, 0, 0.9), rgba(255, 200, 100, 0.85));
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
+  15% {
+    opacity: 0.9;
+    transform: scale(1.02) skew(1deg, 0.5deg);
+    filter: blur(2px) hue-rotate(10deg);
+    background: linear-gradient(60deg, rgba(255, 170, 68, 0.8), rgba(255, 140, 0, 0.75), rgba(255, 200, 100, 0.7));
+    clip-path: polygon(0% 5%, 95% 0%, 100% 95%, 5% 100%);
+  }
+  30% {
+    opacity: 0.75;
+    transform: scale(1.01) skew(-0.5deg, 1deg);
+    filter: blur(4px) hue-rotate(20deg);
+    background: linear-gradient(75deg, rgba(255, 170, 68, 0.65), rgba(255, 140, 0, 0.6), rgba(255, 200, 100, 0.55));
+    clip-path: polygon(5% 0%, 100% 10%, 95% 100%, 0% 90%);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.99) skew(0.8deg, -0.3deg);
+    filter: blur(6px) hue-rotate(15deg);
+    background: linear-gradient(90deg, rgba(255, 170, 68, 0.4), rgba(255, 140, 0, 0.35), rgba(255, 200, 100, 0.3));
+    clip-path: polygon(0% 15%, 85% 0%, 100% 85%, 15% 100%);
+  }
+  70% {
+    opacity: 0.3;
+    transform: scale(1.005) skew(-0.2deg, 0.6deg);
+    filter: blur(8px) hue-rotate(5deg);
+    background: linear-gradient(105deg, rgba(255, 170, 68, 0.25), rgba(255, 140, 0, 0.2), rgba(255, 200, 100, 0.15));
+    clip-path: polygon(10% 0%, 100% 20%, 90% 100%, 0% 80%);
+  }
+  85% {
+    opacity: 0.15;
+    transform: scale(1) skew(0.1deg, -0.1deg);
+    filter: blur(10px) hue-rotate(0deg);
+    background: linear-gradient(120deg, rgba(255, 170, 68, 0.1), rgba(255, 140, 0, 0.08), rgba(255, 200, 100, 0.05));
+    clip-path: polygon(5% 5%, 95% 5%, 95% 95%, 5% 95%);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1) skew(0deg, 0deg);
+    filter: blur(12px) hue-rotate(0deg);
+    background: linear-gradient(135deg, rgba(255, 170, 68, 0), rgba(255, 140, 0, 0), rgba(255, 200, 100, 0));
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
+}
         
