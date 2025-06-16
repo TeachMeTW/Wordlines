@@ -46,6 +46,7 @@ function App() {
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState<any>(null)
   const [selectedEventIndex, setSelectedEventIndex] = useState(0) // For navigating through events in branch view
+  const [isTransitioning, setIsTransitioning] = useState(false) // Track if nixie meter is transitioning
 
   const worldlines = Object.values(worldlineData)
   const currentWorldline = selectedWorldline ? worldlineData[selectedWorldline] : null
@@ -277,19 +278,23 @@ This protocol becomes the foundation for all future temporal operations within t
         setSelectedEventIndex(0)
       } else if (event.key === 'ArrowUp') {
         event.preventDefault()
-        setSelectedEventIndex(prev => Math.max(0, prev - 1))
+        const newIndex = Math.max(0, selectedEventIndex - 1)
+        setSelectedEventIndex(newIndex)
+        
+        // No transition here - only change display on Enter
       } else if (event.key === 'ArrowDown') {
         event.preventDefault()
-        const eventCount = currentEvents.length
-        setSelectedEventIndex(prev => Math.min(eventCount - 1, prev + 1))
+        const newIndex = Math.min(currentEvents.length - 1, selectedEventIndex + 1)
+        setSelectedEventIndex(newIndex)
+        
+        // No transition here - only change display on Enter
       } else if (event.key === 'Enter') {
         event.preventDefault()
-        if (currentEvents.length > 0) {
-          // Open modal for selected event instead of going to individual view
-          const selectedEventData = currentEvents[selectedEventIndex]
-          if (selectedEventData) {
-            handleEventClick(selectedEventData[0]) // selectedEventData[0] is the eventId
-          }
+        
+        // Open modal for the selected event
+        const selectedEventData = currentEvents[selectedEventIndex]
+        if (selectedEventData) {
+          handleEventClick(selectedEventData[0]) // selectedEventData[0] is the eventId
         }
       }
     } else {
@@ -298,13 +303,26 @@ This protocol becomes the foundation for all future temporal operations within t
       
       if (event.key === 'ArrowUp') {
         event.preventDefault()
-        setSelectedIndex(prev => Math.max(0, prev - 1))
+        const newIndex = Math.max(0, selectedIndex - 1)
+        setSelectedIndex(newIndex)
+        
+        // No transition here - only change display on Enter
       } else if (event.key === 'ArrowDown') {
         event.preventDefault()
-        setSelectedIndex(prev => Math.min(worldlineKeys.length - 1, prev + 1))
+        const newIndex = Math.min(worldlineKeys.length - 1, selectedIndex + 1)
+        setSelectedIndex(newIndex)
+        
+        // No transition here - only change display on Enter
       } else if (event.key === 'Enter') {
         event.preventDefault()
         setSelectedWorldline(worldlineKeys[selectedIndex])
+        
+        // Animate to the selected worldline when entering it
+        const worldline = worldlineData[worldlineKeys[selectedIndex]]
+        if (worldline) {
+          const targetValue = (worldline.percentage).toFixed(6)
+          animateNixieTransition(targetValue, 1200) // 1.2 second transition
+        }
       }
     }
   }, [selectedWorldline, selectedIndex, selectedEventIndex, viewingIndividualBranch, currentWorldline, modalOpen, currentEvents])
@@ -335,12 +353,19 @@ This protocol becomes the foundation for all future temporal operations within t
 
   const handleWorldlineClick = (worldlineId: string) => {
     setSelectedWorldline(worldlineId)
+    
+    // Get the worldline data and animate to its percentage
+    const worldline = worldlineData[worldlineId]
+    if (worldline) {
+      const targetValue = (worldline.percentage).toFixed(6)
+      animateNixieTransition(targetValue, 1200) // 1.2 second transition
+    }
   }
 
   // Handle event click
   const handleEventClick = (eventId: string) => {
     // Search through all event categories
-    let event = null
+    let event: any = null
     for (const category of Object.values(worldlineEvents)) {
       if (category[eventId]) {
         event = category[eventId]
@@ -351,6 +376,17 @@ This protocol becomes the foundation for all future temporal operations within t
     if (event) {
       setSelectedEvent(event)
       setModalOpen(true)
+      
+      // Animate to the event's target worldline value
+      if (event.toWorldline) {
+        // Extract percentage from "β: 1.198765%" format
+        const match = event.toWorldline.match(/(\d+\.\d+)%/)
+        if (match) {
+          const percentage = parseFloat(match[1])
+          const targetValue = (percentage).toFixed(6)
+          animateNixieTransition(targetValue, 800) // Faster transition for events
+        }
+      }
     }
   }
 
@@ -358,6 +394,36 @@ This protocol becomes the foundation for all future temporal operations within t
   const closeModal = () => {
     setModalOpen(false)
     setSelectedEvent(null)
+  }
+
+  // Function to animate nixie meter value transition
+  const animateNixieTransition = (targetValue: string, duration: number = 1000) => {
+    setIsTransitioning(true)
+    const startValue = parseFloat(customValue)
+    const endValue = parseFloat(targetValue)
+    const startTime = Date.now()
+    
+    const animate = () => {
+      const elapsed = Date.now() - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      
+      // Smooth easing function (ease-out)
+      const easeOut = 1 - Math.pow(1 - progress, 3)
+      
+      // Interpolate between start and end values
+      const currentValue = startValue + (endValue - startValue) * easeOut
+      
+      // Format to 6 decimal places to match worldline format
+      setCustomValue(currentValue.toFixed(6))
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate)
+      } else {
+        setIsTransitioning(false)
+      }
+    }
+    
+    requestAnimationFrame(animate)
   }
 
   return (
@@ -1260,11 +1326,14 @@ This protocol becomes the foundation for all future temporal operations within t
           height: '220px',
           zIndex: 50,
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          border: '2px solid #333',
+          border: isTransitioning ? '2px solid rgba(255, 170, 68, 0.8)' : '2px solid #333',
           borderRadius: '8px',
           padding: '10px',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
-          overflow: 'hidden'
+          boxShadow: isTransitioning 
+            ? '0 4px 12px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 170, 68, 0.3)' 
+            : '0 4px 12px rgba(0, 0, 0, 0.5)',
+          overflow: 'hidden',
+          transition: 'border-color 0.3s ease, box-shadow 0.3s ease'
         }}
       >
       // Camera position: [0.00, 0.15, 0.18]
