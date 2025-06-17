@@ -109,4 +109,208 @@ body,
     clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
   }
 }
+
+@keyframes flyingEquation0 {
+  0% {
+    transform: scale(0.01);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  80% {
+    transform: scale(2);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(8);
+    opacity: 0;
+  }
+}
+
+@keyframes flyingEquation1 {
+  0% {
+    transform: scale(0.02);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.7;
+  }
+  75% {
+    transform: scale(1.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(10);
+    opacity: 0;
+  }
+}
+
+@keyframes flyingEquation2 {
+  0% {
+    transform: scale(0.005);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(1.5);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(12);
+    opacity: 0;
+  }
+}
+
+@keyframes typewriter {
+  0% {
+    width: 0;
+    opacity: 1;
+  }
+  50% {
+    width: 100%;
+    opacity: 1;
+  }
+  85% {
+    width: 100%;
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes typingFlyOut0 {
+  0% {
+    transform: scale(0.1);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+    transform: scale(0.8);
+  }
+  80% {
+    transform: scale(2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(8);
+    opacity: 0;
+  }
+}
+
+@keyframes typingFlyOut1 {
+  0% {
+    transform: scale(0.05);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+    transform: scale(0.9);
+  }
+  75% {
+    transform: scale(2.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(10);
+    opacity: 0;
+  }
+}
+
+@keyframes typingFlyOut2 {
+  0% {
+    transform: scale(0.02);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  70% {
+    transform: scale(2.5);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(12);
+    opacity: 0;
+  }
+}
+
+@keyframes scanlines {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(4px);
+  }
+}
+
+@keyframes crtFlicker {
+  0% {
+    opacity: 0.96;
+    filter: brightness(0.98) contrast(0.98);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.03) contrast(1.06);
+  }
+  100% {
+    opacity: 0.97;
+    filter: brightness(0.99) contrast(0.96);
+  }
+}
+
+@keyframes wavyDistortion {
+  0% {
+    transform: skewY(0deg) scaleX(1);
+    filter: blur(0.5px) hue-rotate(0deg);
+  }
+  25% {
+    transform: skewY(0.3deg) scaleX(1.002);
+    filter: blur(1px) hue-rotate(2deg);
+  }
+  50% {
+    transform: skewY(-0.2deg) scaleX(0.998);
+    filter: blur(0.8px) hue-rotate(-1deg);
+  }
+  75% {
+    transform: skewY(0.4deg) scaleX(1.001);
+    filter: blur(1.2px) hue-rotate(3deg);
+  }
+  100% {
+    transform: skewY(0deg) scaleX(1);
+    filter: blur(0.5px) hue-rotate(0deg);
+  }
+}
+
+@keyframes wavyDistortion2 {
+  0% {
+    transform: skewX(0.5deg) translateY(0px);
+    opacity: 0.8;
+  }
+  20% {
+    transform: skewX(-0.2deg) translateY(1px);
+    opacity: 0.9;
+  }
+  40% {
+    transform: skewX(0.3deg) translateY(-0.5px);
+    opacity: 0.7;
+  }
+  60% {
+    transform: skewX(-0.4deg) translateY(0.8px);
+    opacity: 0.85;
+  }
+  80% {
+    transform: skewX(0.1deg) translateY(-0.3px);
+    opacity: 0.75;
+  }
+  100% {
+    transform: skewX(0.5deg) translateY(0px);
+    opacity: 0.8;
+  }
+}
         

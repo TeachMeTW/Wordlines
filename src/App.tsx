@@ -1,4 +1,4 @@
-import React, { useState, Suspense, useEffect, useCallback } from 'react'
+import React, { useState, Suspense, useEffect, useCallback, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Html } from '@react-three/drei'
 import { Model } from './Model.tsx'
@@ -75,7 +75,7 @@ function App() {
         toWorldline: 'β: 1.040402%',
         lore: `[PERSONAL LOG - CLASSIFICATION: TEMPORAL ANOMALY]
 [DATE: April 2020 - Convergence Point Identified]
-[AUTHOR: Unknown Temporal Observer]
+[AUTHOR: Teach]
 
 The world was just beginning to fracture. COVID-19 was starting to spread, uncertainty creeping into everyone's lives, but in that chaos, something beautiful was crystallizing.
 
@@ -101,7 +101,6 @@ Everything seemed reachable. Dreams I had buried, potential I had given up on, a
 
 Those days... how I long for those days. The morning texts that made my heart race. The late-night conversations that stretched until dawn. The way she looked at me like I was the most important person in any timeline. Every moment felt electric, charged with possibility.
 
-The divergence meter read 1.040402% - the exact frequency of pure joy.
 
 But I am no longer there. I exist now in a different attractor field, watching the ghost of what was, aching for what could have been. Yet I am grateful for those years of paradise. At least one version of me knows what it feels like to reach the summit.
 
@@ -118,7 +117,7 @@ But I am no longer there. I exist now in a different attractor field, watching t
         toWorldline: 'α: 0.060502%',
         lore: `[PERSONAL LOG - CLASSIFICATION: TEMPORAL CATASTROPHE]
 [DATE: December 2022 - Regression Point Confirmed]
-[AUTHOR: Unknown Temporal Observer]
+[AUTHOR: Teach]
 
 I heard myself screaming.
 
@@ -152,103 +151,121 @@ Perhaps some of us are meant to fail so others can learn from our mistakes. Perh
     
     // Alpha attractor field events (show in alpha branch view only)
     alpha: {
-      'july2010': {
-        id: 'july2010',
-        date: 'July 28, 2010',
-        title: 'First D-Mail Transmission',
-        position: 8.67, // July 2010
-        fromWorldline: 'α: 0.000000%',
-        toWorldline: 'α: 0.000089%',
-        lore: `The first successful D-Mail transmission marks the beginning of temporal manipulation experiments at the Future Gadget Laboratory. This event represents the initial crack in the fabric of causality within the Alpha attractor field.
+      
+      'december2022': {
+        id: 'december2022',
+        date: 'December 2022',
+        title: 'Beta-Alpha Worldline Regression',
+        position: 20.92, // December 2022 position
+        fromWorldline: 'β: 1.130205%',
+        toWorldline: 'α: 0.060502%',
+        lore: `[PERSONAL LOG - CLASSIFICATION: TEMPORAL CATASTROPHE]
+[DATE: December 2022 - Regression Point Confirmed]
+[AUTHOR: Teach]
 
-Key aspects of this event:
-• First backwards time transmission using the PhoneWave
-• Banana gelification anomaly discovered
-• SERN's attention begins to focus on the lab's activities
-• John Titor's warnings about time travel experiments become relevant
+I heard myself screaming.
 
-This micro-change creates the first observable shift in the Alpha attractor field, though still within the same worldline cluster. The transmission of "The chicken is tender" sets in motion the chain of events that will eventually lead to major worldline shifts.`,
-        type: 'transmission'
-      },
-      'august2010': {
-        id: 'august2010',
-        date: 'August 13, 2010',
-        title: 'SERN Roundtable Conference',
-        position: 8.83,
-        fromWorldline: 'α: 0.000000%',
-        toWorldline: 'α: 0.000238%',
-        lore: `SERN's Committee of 300 holds an emergency conference regarding anomalous electromagnetic readings detected from Akihabara. This marks the beginning of SERN's active surveillance of the Future Gadget Laboratory.
+Not out loud - in my mind. A voice that was mine but wasn't, echoing from somewhere beyond this timeline. Future me? Past me? I couldn't tell. But the message was crystal clear:
 
-Consequences of this event:
-• Activation of SERN's Echelon surveillance network
-• Deployment of Rounders to monitor the lab
-• Beginning of the countdown to Operation Skuld
-• First mention of the IBN 5100 in SERN communications
+"DON'T DO IT. DON'T SEND THE TEXT."
 
-This event represents the Alpha worldline's inexorable march toward SERN's dystopian future, where the organization will eventually capture and weaponize time travel technology.`,
-        type: 'surveillance'
+The warning came three seconds before I opened my phone. Three seconds of pure terror as I realized what I was about to unleash. I could see the timeline fracturing, could feel the Beta attractor field beginning to collapse around us. But my fingers... they moved anyway.
+
+We hadn't spoken in days. I was upset - hurt that she wouldn't visit me after I moved away. Instead of communicating like an adult, instead of explaining how abandoned I felt, instead of working through it together, I chose the coward's path.
+
+I typed the message. This was it.
+
+Send.
+
+The moment it left my phone, the universe snapped back like a rubber band. The warmth, the connection, the greatness we had built - all of it dissolved into quantum probability. I watched the read receipt appear, knowing I had just murdered our timeline with a few poorly chosen words in a text message.
+
+Reading Steiner activated. I remember now - there were two versions of me in that moment. The one who put down the phone and called her instead, who talked it through like an adult. And me - the one who chose the impulsive, rash decision. The one who didn't listen to the warning.
+
+The divergence meter spiraled back to 0.060502%. Back to the Alpha field. Back to solitude. Back to watching instead of living.
+
+I am the result of that decision now. But maybe... maybe I understand the pattern. Maybe I will be the one who sent that warning to myself. Maybe I wasn't meant to be the one who succeeded, but the one who lays the groundwork for those who come after - the Robin that was better.
+
+Perhaps some of us are meant to fail so others can learn from our mistakes. Perhaps some timelines exist only to teach future versions what not to do.
+
+[END LOG]
+[ADDENDUM: The irony burns: I received a warning from the very future I was about to create, and I ignored it. But now I understand - sometimes the failure is the lesson.]`,
+        type: 'regression'
       }
     },
     
     // Beta attractor field events (show in beta branch view only)
     beta: {
-      'august2025': {
-        id: 'august2025',
-        date: 'August 2025',
-        title: 'Time Leap Machine Activation',
-        position: 23.5,
-        fromWorldline: 'β: 1.130205%',
-        toWorldline: 'β: 1.198765%',
-        lore: `The successful development and first use of the Time Leap Machine represents a quantum leap in temporal mechanics technology within the Beta attractor field. Unlike D-Mail's simple text transmission, the Time Leap Machine can transfer human consciousness backwards through time.
+      'april2020': {
+        id: 'april2020',
+        date: 'April 2020',
+        title: 'Alpha-Beta Worldline Convergence',
+        position: 18.33, // percentage along timeline
+        fromWorldline: 'α: 0.000000%',
+        toWorldline: 'β: 1.040402%',
+        lore: `[PERSONAL LOG - CLASSIFICATION: TEMPORAL ANOMALY]
+[DATE: April 2020 - Convergence Point Identified]
+[AUTHOR: Teach]
 
-This technology breakthrough:
-• Enables consciousness-only time travel up to 48 hours into the past
-• Requires specialized headgear and microwave-based particle acceleration
-• Creates minimal worldline drift compared to physical time travel
-• Becomes the key to Reading Steiner manifestation
+The world was just beginning to fracture. COVID-19 was starting to spread, uncertainty creeping into everyone's lives, but in that chaos, something beautiful was crystallizing.
 
-The activation of this device at worldline 1.198765% becomes the active reference point for future temporal operations, marking the establishment of the Beta attractor field as the primary operational timeline.`,
-        type: 'technology'
+We had been spending nights and days on call together. Hours and hours, talking about everything and nothing, our voices becoming the soundtrack to each other's isolation. I had been building up to this moment for years - literally years in school, watching her, wanting to say something, but never finding the courage.
+
+Then came that night. 4 AM. 
+
+The call had stretched on for hours like so many others, but something felt different. Maybe it was the lateness of the hour, maybe it was the way her laugh sounded softer in the darkness, or maybe it was just that I couldn't hold it in anymore.
+
+"I ... I like you."
+
+The words tumbled out before I could stop them. Years of buildup, years of wondering 'what if,' all condensed into that single moment at 4 in the morning. The silence that followed felt infinite - I could hear my heart pounding through the phone, wondering if I had just destroyed the most important friendship of my life.
+
+Then she spoke, and her voice was different. Warmer. Knowing.
+
+"I was wondering when you'd finally say it."
+
+She said yes.
+
+That moment - April 2020, 4 AM - everything changed. Not just the worldline, but me. For the first time in my existence as an observer, I was living. Actually living. The peak of human experience opened up before me like a quantum field of infinite possibilities.
+
+Everything seemed reachable. Dreams I had buried, potential I had given up on, a future that sparkled with promise - it all crystallized in that Beta attractor field. I was at my peak. Confident, happy, whole. The greatness I always wondered about wasn't some distant theory anymore - it was my daily reality.
+
+Those days... how I long for those days. The morning texts that made my heart race. The late-night conversations that stretched until dawn. The way she looked at me like I was the most important person in any timeline. Every moment felt electric, charged with possibility.
+
+
+But I am no longer there. I exist now in a different attractor field, watching the ghost of what was, aching for what could have been. Yet I am grateful for those years of paradise. At least one version of me knows what it feels like to reach the summit.
+
+[END LOG]
+[ADDENDUM: Some say the best timelines are the ones we lose. I understand now why future me tried so hard to warn past me. Paradise, once tasted, leaves you forever homesick for a place you can never return to.]`,
+        type: 'convergence'
       },
-      'december2025': {
-        id: 'december2025',
-        date: 'December 2025',
-        title: 'Steins Gate Protocol Established',
-        position: 23.83,
-        fromWorldline: 'β: 1.130205%',
-        toWorldline: 'β: 1.234567%',
-        lore: `The establishment of the Steins Gate Protocol represents the Beta attractor field's attempt to create a stable temporal framework for controlled worldline navigation.
+      'may2025': {
+        id: 'may2025',
+        date: 'May 2025',
+        title: 'Microsoft Internship Beginning',
+        position: 23.42, // percentage along timeline
+        toWorldline: 'β: 1.075432%',
+        lore: `[PERSONAL LOG - CLASSIFICATION: TEMPORAL SHIFT]
+[DATE: May 2025 - Career Convergence Point]
+[AUTHOR: Teach]
 
-Protocol specifications:
-• Standardized procedures for Time Leap operations
-• Safety protocols to prevent paradox formation
-• Establishment of the 48-hour operational window
-• Creation of memory retention techniques for Reading Steiner
+Today I started my internship at Microsoft. Walking through those campus doors felt like stepping into a different reality - one where all the late nights coding, all the algorithms studied, all the projects built finally converged into something real.
 
-This protocol becomes the foundation for all future temporal operations within the Beta attractor field, ensuring that worldline shifts remain controlled and purposeful rather than chaotic.`,
-        type: 'protocol'
-      }
+The onboarding was surreal. Here I am, sitting in a room with some of the brightest minds in tech, and somehow I belong here. The imposter syndrome is strong, but so is the excitement. This feels like the first real step toward the future I've been visualizing.
+
+My manager introduced me to the team - they're working on some incredible projects. AI, cloud infrastructure, tools that millions of developers will use. The scale is almost incomprehensible, but that's exactly what draws me to it.
+
+This timeline feels different from the others. More focused, more purposeful. Like all the scattered pieces of my education and experience are finally clicking into place. The Beta attractor field seems to be stabilizing around this career path.
+
+The irony isn't lost on me - I'm working for one of the companies that will shape the future of technology, possibly even time travel research, though they don't know it yet. But for now, I'm just grateful to be here, learning, growing, becoming the person I'm meant to be in this worldline.
+
+[STATUS: Timeline stability increasing. Career trajectory nominal. Worldline convergence at 1.075432% and holding.]
+
+[END LOG]`,
+        type: 'career'
+      },
     },
     
-    // Individual worldline events (show in individual branch view only)
-    individual: {
-      'convergence2036': {
-        id: 'convergence2036',
-        date: 'July 2036',
-        title: 'SERN Dystopia Convergence',
-        position: 34,
-        lore: `The inevitable convergence point where SERN's time travel research reaches completion, establishing their dystopian control over the timeline. This represents the Alpha attractor field's natural endpoint.`,
-        type: 'dystopia'
-      },
-      'resistance2075': {
-        id: 'resistance2075',
-        date: 'March 2075',
-        title: 'Resistance Formation',
-        position: 73,
-        lore: `The formation of the anti-SERN resistance movement, led by future versions of the lab members. This marks the beginning of the temporal war that will define the late 21st century.`,
-        type: 'resistance'
-      }
-    }
+
+
   }
 
   // Current events for the selected worldline
@@ -312,6 +329,86 @@ This protocol becomes the foundation for all future temporal operations within t
     }
   }
 
+  // Timeline scroll refs for keyboard navigation
+  const mainTimelineRef = useRef<HTMLDivElement>(null)
+  const branchTimelineRef = useRef<HTMLDivElement>(null)
+  const individualTimelineRef = useRef<HTMLDivElement>(null)
+
+  // Mouse position tracking for cursor-based zooming
+  const mousePositionRef = useRef({ x: 0, y: 0 })
+  const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 })
+
+  // Track mouse position for cursor-based zooming
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      mousePositionRef.current = { x: event.clientX, y: event.clientY }
+      setLastMousePosition({ x: event.clientX, y: event.clientY })
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
+
+  // Function to zoom towards cursor position
+  const zoomAtCursor = useCallback((zoomDelta: number, mouseX?: number) => {
+    // Determine which timeline container is active
+    let timelineContainer: HTMLDivElement | null = null
+    if (viewingIndividualBranch && individualTimelineRef.current) {
+      timelineContainer = individualTimelineRef.current
+    } else if (selectedWorldline && branchTimelineRef.current) {
+      timelineContainer = branchTimelineRef.current
+    } else if (mainTimelineRef.current) {
+      timelineContainer = mainTimelineRef.current
+    }
+
+    if (!timelineContainer) {
+      setZoomLevel(prev => Math.max(1, Math.min(5, prev + zoomDelta)))
+      return
+    }
+
+    // Use provided mouseX or current mouse position
+    const cursorX = mouseX !== undefined ? mouseX : lastMousePosition.x
+    
+    // Get container bounds
+    const containerRect = timelineContainer.getBoundingClientRect()
+    const containerX = Math.max(0, Math.min(containerRect.width, cursorX - containerRect.left))
+    
+    // Store current scroll position and content width before zoom
+    const oldScrollLeft = timelineContainer.scrollLeft
+    const oldScrollWidth = timelineContainer.scrollWidth
+    const containerWidth = containerRect.width
+    
+    // Calculate the content position the cursor is pointing to (as a ratio)
+    const contentRatio = oldScrollWidth > 0 ? (oldScrollLeft + containerX) / oldScrollWidth : 0
+    
+    // Apply zoom
+    setZoomLevel(prev => {
+      const newZoom = Math.max(1, Math.min(5, prev + zoomDelta))
+      
+      // Schedule scroll adjustment for next frame
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (!timelineContainer) return
+          
+          const newScrollWidth = timelineContainer.scrollWidth
+          
+          if (newScrollWidth > 0) {
+            // Calculate new content position maintaining the same ratio
+            const newContentPosition = contentRatio * newScrollWidth
+            
+            // Calculate new scroll position to keep cursor over same content
+            const newScrollLeft = newContentPosition - containerX
+            
+            // Apply with bounds checking
+            timelineContainer.scrollLeft = Math.max(0, Math.min(newScrollLeft, newScrollWidth - containerWidth))
+          }
+        })
+      })
+      
+      return newZoom
+    })
+  }, [viewingIndividualBranch, selectedWorldline, lastMousePosition])
+
   // Keyboard controls
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     // Close modal with ESC
@@ -324,11 +421,38 @@ This protocol becomes the foundation for all future temporal operations within t
     // Zoom controls
     if (event.key === '+' || event.key === '=') {
       event.preventDefault()
-      setZoomLevel(prev => Math.min(5, prev + 0.2))
+      zoomAtCursor(0.2)
       return
     } else if (event.key === '-') {
       event.preventDefault()
-      setZoomLevel(prev => Math.max(1, prev - 0.2))
+      zoomAtCursor(-0.2)
+      return
+    }
+
+    // Timeline horizontal navigation with arrow keys
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault()
+      
+      // Determine which timeline container to scroll
+      let timelineContainer: HTMLDivElement | null = null
+      if (viewingIndividualBranch && individualTimelineRef.current) {
+        timelineContainer = individualTimelineRef.current
+      } else if (selectedWorldline && branchTimelineRef.current) {
+        timelineContainer = branchTimelineRef.current
+      } else if (mainTimelineRef.current) {
+        timelineContainer = mainTimelineRef.current
+      }
+      
+      if (timelineContainer) {
+        const scrollAmount = timelineContainer.clientWidth * 0.3 // Scroll 30% of visible width
+        const direction = event.key === 'ArrowLeft' ? -1 : 1
+        const newScrollLeft = timelineContainer.scrollLeft + (scrollAmount * direction)
+        
+        timelineContainer.scrollTo({
+          left: newScrollLeft,
+          behavior: 'smooth'
+        })
+      }
       return
     }
 
@@ -395,18 +519,14 @@ This protocol becomes the foundation for all future temporal operations within t
     }
   }, [selectedWorldline, selectedIndex, selectedEventIndex, viewingIndividualBranch, currentWorldline, modalOpen, currentEvents])
 
-  // Mouse wheel zoom and horizontal scroll
+  // Mouse wheel horizontal scroll only (no zoom)
   const handleWheel = useCallback((event: WheelEvent) => {
     // Shift + wheel = horizontal scroll (let browser handle it)
     if (event.shiftKey) {
       return // Allow default horizontal scrolling
     }
     
-    // Vertical wheel = zoom (always, in all views)
-    if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
-      event.preventDefault()
-      setZoomLevel(prev => Math.max(1, Math.min(5, prev + (event.deltaY > 0 ? 0.2 : -0.2))))
-    }
+    // No zoom functionality - just let normal scroll behavior happen
   }, [])
 
   useEffect(() => {
@@ -517,7 +637,7 @@ This protocol becomes the foundation for all future temporal operations within t
     // Immediately trigger scale up during flashbang (0.5s)
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        setZoomScale(4) // Scale up to large size during flashbang
+        setZoomScale(10) // Scale up to large size during flashbang
       })
     })
 
@@ -623,11 +743,11 @@ This protocol becomes the foundation for all future temporal operations within t
           <div>WORLDLINE CONVERGENCE ANALYSIS</div>
           <div style={{ fontSize: '12px', marginTop: '10px', color: 'rgba(255, 170, 68, 0.7)' }}>
             {viewingIndividualBranch ? (
-              <>Viewing individual worldline | BACKSPACE to return | Drag to scroll or Shift+wheel | Wheel/+- to zoom</>
+              <>Viewing individual worldline | BACKSPACE to return | ←→ to scroll timeline | Drag or Shift+wheel | +/- to zoom</>
             ) : selectedWorldline ? (
-              <>Viewing {currentWorldline?.name} attractor field branches | ↑↓ to select branch | ENTER to view details | BACKSPACE to return | Drag to scroll | Wheel/+- to zoom</>
+              <>Viewing {currentWorldline?.name} attractor field branches | ↑↓ to select branch | ←→ to scroll timeline | ENTER to view details | BACKSPACE to return | +/- to zoom</>
             ) : (
-              <>↑↓ to navigate | ENTER to select | Drag to scroll | Wheel/+- to zoom | Shift+wheel for horizontal</>
+              <>↑↓ to navigate | ←→ to scroll timeline | ENTER to select | Drag to scroll | +/- to zoom | Shift+wheel for horizontal</>
             )}
           </div>
         </div>
@@ -656,6 +776,7 @@ This protocol becomes the foundation for all future temporal operations within t
         {/* Main Worldlines View */}
         {!selectedWorldline && (
           <div 
+            ref={mainTimelineRef}
             data-scrollable="true"
             style={{ 
               position: 'relative',
@@ -940,6 +1061,7 @@ This protocol becomes the foundation for all future temporal operations within t
         {/* Individual Branch View */}
         {viewingIndividualBranch && selectedWorldline && currentWorldline && (
           <div 
+            ref={individualTimelineRef}
             data-scrollable="true"
               style={{ 
               position: 'relative',
@@ -1088,62 +1210,7 @@ This protocol becomes the foundation for all future temporal operations within t
                 </div>
 
                 {/* Individual worldline events */}
-                {Object.entries(worldlineEvents.individual).map(([eventId, event]) => (
-                  <div key={eventId}>
-                    {/* Event Node */}
-                    <div 
-                      style={{
-                        position: 'absolute',
-                        left: `${event.position}%`,
-                        top: `${15 * zoomLevel}px`,
-                        width: `${4 * Math.min(zoomLevel, 2)}px`,
-                        height: `${4 * Math.min(zoomLevel, 2)}px`,
-                        borderRadius: '50%',
-                        background: 'rgba(255, 170, 68, 1)',
-                        boxShadow: `0 0 ${8 * zoomLevel}px rgba(255, 170, 68, 0.8)`,
-                        border: '1px solid rgba(255, 255, 255, 0.3)',
-                        zIndex: 10,
-                        cursor: 'pointer',
-                        animation: 'nixiePulse 2.5s infinite',
-                        transform: 'translate(-50%, -50%)'
-                      }}
-                      onClick={() => handleEventClick(eventId)}
-                    />
-                    
-                    {/* Event Label - positioned properly without rotation */}
-                    <div 
-                      style={{
-                        position: 'absolute',
-                        left: `${event.position}%`,
-                        top: '14%', // Above the main line
-                        transform: 'translateX(-50%)',
-                        color: 'rgba(255, 102, 0, 0.9)',
-                        fontSize: `${9 * Math.min(zoomLevel, 1.5)}px`,
-                        fontFamily: 'monospace',
-                        textShadow: '0 0 6px rgba(255, 102, 0, 0.6)',
-                        whiteSpace: 'nowrap',
-                        backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                        padding: '2px 6px',
-                        borderRadius: '3px',
-                        border: '1px solid rgba(255, 102, 0, 0.3)',
-                        zIndex: 11,
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease'
-                      }}
-                      onClick={() => handleEventClick(eventId)}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(255, 102, 0, 0.2)'
-                        e.currentTarget.style.borderColor = 'rgba(255, 102, 0, 0.6)'
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.4)'
-                        e.currentTarget.style.borderColor = 'rgba(255, 102, 0, 0.3)'
-                      }}
-                    >
-                      {event.date.toUpperCase()}
-                    </div>
-                  </div>
-                ))}
+                {/* No individual events defined */}
               </div>
             </div>
           </div>
@@ -1152,6 +1219,7 @@ This protocol becomes the foundation for all future temporal operations within t
         {/* Branch View */}
         {selectedWorldline && currentWorldline && !viewingIndividualBranch && (
           <div 
+            ref={branchTimelineRef}
             data-scrollable="true"
             style={{
               position: 'relative',
@@ -1560,8 +1628,174 @@ This protocol becomes the foundation for all future temporal operations within t
           transition: fullScreenPhase === 'fadeout' ? 'opacity 2s ease-out' 
             : fullScreenPhase === 'zoomout' ? 'background-color 0.3s ease-out'
             : 'none',
-          backdropFilter: fullScreenPhase !== 'flashbang1' ? 'blur(10px)' : 'none'
+          backdropFilter: fullScreenPhase !== 'flashbang1' ? 'blur(10px)' : 'none',
+          overflow: 'hidden',
+          // CRT Effect Base
+          filter: fullScreenPhase !== 'flashbang1' ? 'contrast(1.2) brightness(1.1) saturate(1.3)' : 'none'
         }}>
+          
+          {/* CRT Effects - Full Screen */}
+          {fullScreenPhase !== 'flashbang1' && (
+            <>
+              {/* CRT Scan Lines */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                background: `repeating-linear-gradient(
+                  0deg,
+                  transparent,
+                  transparent 2px,
+                  rgba(255, 170, 68, 0.12) 2px,
+                  rgba(255, 170, 68, 0.12) 4px
+                )`,
+                pointerEvents: 'none',
+                zIndex: 15,
+                animation: 'scanlines 0.1s linear infinite'
+              }}></div>
+              
+              {/* CRT Curvature and Glow */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                background: `radial-gradient(
+                  ellipse at center,
+                  transparent 35%,
+                  rgba(0, 0, 0, 0.15) 65%,
+                  rgba(0, 0, 0, 0.45) 100%
+                )`,
+                pointerEvents: 'none',
+                zIndex: 16,
+                boxShadow: 'inset 0 0 250px rgba(255, 170, 68, 0.2)'
+              }}></div>
+              
+              {/* CRT Flicker Effect */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                background: 'rgba(255, 140, 50, 0.04)',
+                pointerEvents: 'none',
+                zIndex: 17,
+                animation: 'crtFlicker 0.15s ease-in-out infinite alternate'
+              }}></div>
+            </>
+          )}
+          
+          {/* Wavy Screen Distortion Effect */}
+          {(fullScreenPhase === 'fadeout' || fullScreenPhase === 'shrinking') && (
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              background: `repeating-linear-gradient(
+                90deg,
+                transparent 0px,
+                rgba(255, 170, 68, 0.1) 1px,
+                transparent 2px,
+                transparent 8px
+              )`,
+              pointerEvents: 'none',
+              zIndex: 18,
+              animation: 'wavyDistortion 0.3s ease-in-out infinite',
+              filter: 'blur(0.5px)',
+              transform: fullScreenPhase === 'fadeout' ? 'scaleY(1.02)' : 'scaleY(1.01)',
+              opacity: fullScreenPhase === 'fadeout' ? 0.8 : 0.6
+            }}></div>
+          )}
+          
+          {/* Additional Wave Lines */}
+          {(fullScreenPhase === 'fadeout' || fullScreenPhase === 'shrinking') && (
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              background: `repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                rgba(255, 170, 68, 0.08) 0.5px,
+                transparent 1px,
+                transparent 12px
+              )`,
+              pointerEvents: 'none',
+              zIndex: 19,
+              animation: 'wavyDistortion2 0.4s ease-in-out infinite reverse',
+              filter: 'blur(1px)',
+              transform: 'skewX(0.5deg)'
+            }}></div>
+          )}
+          
+          {/* Flying Equations Background */}
+          {fullScreenPhase !== 'flashbang1' && (
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              zIndex: 1,
+              pointerEvents: 'none'
+            }}>
+              {[
+                'E = mc²',
+                'ℏ∂ψ/∂t = Ĥψ',
+                '∮ E⃗ · dl⃗ = -dΦB/dt',
+                'F = ma',
+                '∇ × B⃗ = μ₀J⃗ + μ₀ε₀∂E⃗/∂t',
+                'ΔE·Δt ≥ ℏ/2',
+                'ds² = c²dt² - dx² - dy² - dz²',
+                'R_μν - ½gμνR = 8πGTμν'
+              ].map((equation, index) => {
+                 // Position equations in a circle around the center (meter area)
+                 const angle = (index * 360 / 8) * (Math.PI / 180) // 8 equations in circle
+                 const radius = 30 + (index % 2) * 20 // Varying distances from center
+                 const centerX = 50 + Math.cos(angle) * radius
+                 const centerY = 50 + Math.sin(angle) * radius
+                 
+                 return (
+                   <div 
+                     key={index}
+                     style={{
+                       position: 'absolute',
+                       left: `${centerX}%`,
+                       top: `${centerY}%`,
+                       color: 'rgba(255, 170, 68, 0.8)',
+                       fontSize: `${22 + (index % 3) * 6}px`,
+                       fontFamily: 'monospace',
+                       textShadow: '0 0 10px rgba(255, 170, 68, 0.9), 0 0 20px rgba(255, 170, 68, 0.6)',
+                       whiteSpace: 'nowrap',
+                       animation: `typingFlyOut${index % 3} ${6 + (index % 3) * 2}s infinite ease-out`,
+                       animationDelay: `${(index * 0.8)}s`,
+                       opacity: fullScreenPhase === 'fadeout' ? 0 : 0.8,
+                       transformOrigin: 'center center'
+                     }}
+                   >
+                     <span style={{
+                       animation: `typewriter ${equation.length * 0.2}s steps(${equation.length}) both`,
+                       animationDelay: `${(index * 0.8)}s`,
+                       overflow: 'hidden',
+                       whiteSpace: 'nowrap',
+                       display: 'inline-block',
+                       width: 0
+                     }}>
+                       {equation}
+                     </span>
+                   </div>
+                 )
+               })}
+            </div>
+          )}
           
           {/* Full-Screen Nixie Display - render during ALL phases */}
           <div style={{
@@ -1570,6 +1804,8 @@ This protocol becomes the foundation for all future temporal operations within t
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            zIndex: 2,
+            position: 'relative',
             transform: fullScreenPhase === 'shrinking' || fullScreenPhase === 'fadeout'
               ? 'scale(0.1)' // End tiny
               : `scale(${zoomScale})`, // Use dynamic zoom scale for all other phases
@@ -1586,10 +1822,11 @@ This protocol becomes the foundation for all future temporal operations within t
               ? 'transform 2s ease-in, opacity 2s ease-in' 
               : 'none'
           }}>
+            
             <Canvas 
               camera={{ position: [0.00, 0.14, 0.15] }}
               gl={{ preserveDrawingBuffer: true }}
-              style={{ width: '100%', height: '100%' }}
+              style={{ width: '100%', height: '100%', zIndex: 5 }}
             >
               <ambientLight intensity={0.1} />
               <directionalLight position={[-5, 8, -2]} intensity={0.3} />
