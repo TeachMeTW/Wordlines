@@ -40,6 +40,8 @@ function App() {
   const [isDataLoaded, setIsDataLoaded] = useState(false)
   const [adminMode, setAdminMode] = useState(false) // Track admin mode
   const [keySequence, setKeySequence] = useState<string[]>([]) // Track key sequence for admin access
+  const [backgroundMusic, setBackgroundMusic] = useState<HTMLAudioElement | null>(null) // Background music
+  const [badAudio, setBadAudio] = useState<HTMLAudioElement | null>(null) // Track bad.mp3 instance
 
   const worldlines = Object.values(worldlineData)
   const currentWorldline = selectedWorldline ? worldlineData[selectedWorldline] : null
@@ -87,6 +89,27 @@ function App() {
         
         setWorldlineEvents(eventsObj)
         setIsDataLoaded(true)
+
+        // Initialize background music
+        const bgMusic = new Audio('/main.mp3')
+        bgMusic.loop = true
+        bgMusic.volume = 0.3
+        setBackgroundMusic(bgMusic)
+        
+        // Start playing background music (with user interaction requirement)
+        const playBgMusic = () => {
+          bgMusic.play().catch(error => {
+            console.log('Background music requires user interaction to start:', error)
+          })
+          // Remove the event listener after first interaction
+          document.removeEventListener('click', playBgMusic)
+          document.removeEventListener('keydown', playBgMusic)
+        }
+        
+        // Add event listeners for user interaction
+        document.addEventListener('click', playBgMusic)
+        document.addEventListener('keydown', playBgMusic)
+        
       } catch (error) {
         console.error('Failed to load data from API:', error)
         setIsDataLoaded(true) // Still show the UI even if data fails to load
@@ -94,6 +117,18 @@ function App() {
     }
 
     initializeData()
+    
+    // Cleanup function for background music
+    return () => {
+      if (backgroundMusic) {
+        backgroundMusic.pause()
+        backgroundMusic.currentTime = 0
+      }
+      if (badAudio) {
+        badAudio.pause()
+        badAudio.currentTime = 0
+      }
+    }
   }, [])
 
   // Timeline years
@@ -321,6 +356,9 @@ function App() {
     } else if (selectedWorldline) {
       // In branch view
       if (event.key === 'Backspace') {
+        // Pause bad audio and resume main audio when exiting worldline
+        pauseBadAudioAndResumeMain()
+        
         setSelectedWorldline(null)
         setSelectedIndex(0)
         setSelectedEventIndex(0)
@@ -395,8 +433,24 @@ function App() {
     }
   }, [handleKeyDown, handleWheel])
 
+  // Function to pause bad audio and resume main audio
+  const pauseBadAudioAndResumeMain = () => {
+    if (badAudio) {
+      badAudio.pause() // Just pause, don't reset or destroy
+    }
+    
+    if (backgroundMusic) {
+      backgroundMusic.play().catch(error => {
+        console.error('Error resuming main.mp3:', error)
+      })
+    }
+  }
+
   const handleWorldlineClick = (worldlineId: string) => {
     if (transitionComplete) {
+      // Pause bad audio and resume main audio when switching to any worldline
+      pauseBadAudioAndResumeMain()
+      
       setSelectedWorldline(worldlineId)
       
       // Get the worldline data and animate to its percentage
@@ -424,6 +478,63 @@ function App() {
         setSelectedEvent(event)
         setModalOpen(true)
         
+        // Play special audio for specific events (2020 and 2022 connectors)
+        if (eventId === 'april2020') {
+          // Play good.mp3 for 2020 event
+          // Pause main.mp3
+          if (backgroundMusic) {
+            backgroundMusic.pause()
+          }
+          
+          // If badAudio is playing, stop it and use it for good.mp3
+          if (badAudio) {
+            badAudio.pause()
+          }
+          
+          // Create or resume good.mp3
+          if (!badAudio) {
+            const newGoodAudio = new Audio('/good.mp3')
+            newGoodAudio.volume = 0.5
+            newGoodAudio.loop = true
+            setBadAudio(newGoodAudio) // Reuse badAudio state for good.mp3
+            
+            newGoodAudio.play().catch(error => {
+              console.error('Error playing good.mp3:', error)
+            })
+          } else {
+            // Replace with good.mp3
+            const newGoodAudio = new Audio('/good.mp3')
+            newGoodAudio.volume = 0.5
+            newGoodAudio.loop = true
+            setBadAudio(newGoodAudio)
+            
+            newGoodAudio.play().catch(error => {
+              console.error('Error playing good.mp3:', error)
+            })
+          }
+        } else if (eventId === 'december2022') {
+          // Play bad.mp3 for 2022 event
+          // Pause main.mp3
+          if (backgroundMusic) {
+            backgroundMusic.pause()
+          }
+          
+          // If badAudio is playing, stop it
+          if (badAudio) {
+            badAudio.pause()
+          }
+          
+          // Create or resume bad.mp3
+          const newBadAudio = new Audio('/bad.mp3')
+          newBadAudio.volume = 0.5
+          newBadAudio.loop = true
+          setBadAudio(newBadAudio)
+          
+          newBadAudio.play().catch(error => {
+            console.error('Error playing bad.mp3:', error)
+          })
+        }
+        
         // Animate to the event's target worldline value
         if (event.to_worldline) {
           // Extract percentage from "β: 1.198765%" format
@@ -444,35 +555,6 @@ function App() {
     setSelectedEvent(null)
   }
 
-  // Function to animate nixie meter value transition
-  const animateNixieTransition = (targetValue: string, duration: number = 1000) => {
-    setIsTransitioning(true)
-    const startValue = parseFloat(customValue)
-    const endValue = parseFloat(targetValue)
-    const startTime = Date.now()
-    
-    const animate = () => {
-      const elapsed = Date.now() - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      
-      // Smooth easing function (ease-out)
-      const easeOut = 1 - Math.pow(1 - progress, 3)
-      
-      // Interpolate between start and end values
-      const currentValue = startValue + (endValue - startValue) * easeOut
-      
-      // Format to 6 decimal places to match worldline format
-      setCustomValue(currentValue.toFixed(6))
-      
-      if (progress < 1) {
-        requestAnimationFrame(animate)
-      } else {
-        setIsTransitioning(false)
-      }
-    }
-    
-    requestAnimationFrame(animate)
-  }
 
   // Function to trigger full-screen cinematic transition
   const triggerFullScreenTransition = (targetValue: string) => {
@@ -685,7 +767,7 @@ function App() {
               paddingLeft: '50px',
               paddingRight: '-50px',
               overflowX: 'auto',
-              overflowY: 'visible',
+              overflowY: 'auto',
               cursor: 'grab',
               scrollBehavior: 'smooth'
             }}
@@ -968,7 +1050,7 @@ function App() {
               height: '100%',
               paddingTop: '100px',
               overflowX: 'auto',
-              overflowY: 'visible',
+              overflowY: 'auto',
               cursor: 'grab',
               scrollBehavior: 'smooth'
             }}
@@ -1126,7 +1208,7 @@ function App() {
               height: '100%',
               paddingTop: '100px',
               overflowX: 'auto',
-              overflowY: 'visible',
+              overflowY: 'auto',
               cursor: 'grab',
               scrollBehavior: 'smooth'
             }}
@@ -1260,22 +1342,93 @@ function App() {
               {/* Attractor-specific event branches */}
               {selectedWorldline === 'alpha' && worldlineEvents.alpha && Object.entries(worldlineEvents.alpha).map(([eventId, event], index) => {
                 const isSelected = index === selectedEventIndex
+                
+                // Check if this event branches from another event
+                let parentBranchIndex = -1
+                let branchStartTop = '20%' // Default to main alpha line
+                
+                if (event.from_worldline) {
+                  // Find the parent event this branches from
+                  const parentEvents = Object.entries(worldlineEvents.alpha)
+                  parentBranchIndex = parentEvents.findIndex(([parentId, parentEvent]) => {
+                    // Check direct ID match
+                    if (parentId === event.from_worldline || parentEvent.id === event.from_worldline) {
+                      return true
+                    }
+                    
+                    // Check if from_worldline contains the parentId
+                    if (event.from_worldline && event.from_worldline.includes(parentId)) {
+                      return true
+                    }
+                    
+                    // Check if from_worldline matches the parent's to_worldline format (e.g., "α: 0.060502%")
+                    if (parentEvent.to_worldline === event.from_worldline) {
+                      return true
+                    }
+                    
+                    return false
+                  })
+                  
+                  if (parentBranchIndex !== -1) {
+                    // Branch from the parent event's branch line instead of main line
+                    branchStartTop = `${30 + (parentBranchIndex * 8)}%`
+                  }
+                }
+                
                 return (
                 <div key={eventId}>
-                  {/* Vertical branch connection from main line */}
-                  <div style={{
-                    position: 'absolute',
-                    left: `${event.position}%`,
-                    top: '20%',
-                    width: '2px',
-                    height: `${10 + (index * 8)}%`, // Different heights for different branches
-                    background: isSelected 
-                      ? 'linear-gradient(180deg, rgba(255, 102, 0, 1), rgba(255, 102, 0, 0.8))' 
-                      : 'linear-gradient(180deg, rgba(255, 102, 0, 0.8), rgba(255, 102, 0, 0.4))',
-                    zIndex: 5,
-                    transform: 'translateX(-50%)',
-                    boxShadow: isSelected ? '0 0 8px rgba(255, 102, 0, 0.8)' : 'none'
-                  }}></div>
+                  {/* Vertical branch connection from main line (only if not branching from another event) */}
+                  {parentBranchIndex === -1 && (
+                    <div style={{
+                      position: 'absolute',
+                      left: `${event.position}%`,
+                      top: branchStartTop,
+                      width: '2px',
+                      height: `${10 + (index * 8)}%`, // Different heights for different branches
+                      background: isSelected 
+                        ? 'linear-gradient(180deg, rgba(255, 102, 0, 1), rgba(255, 102, 0, 0.8))' 
+                        : 'linear-gradient(180deg, rgba(255, 102, 0, 0.8), rgba(255, 102, 0, 0.4))',
+                      zIndex: 5,
+                      transform: 'translateX(-50%)',
+                      boxShadow: isSelected ? '0 0 8px rgba(255, 102, 0, 0.8)' : 'none'
+                    }}></div>
+                  )}
+
+                  {/* Vertical connection from parent branch to this branch (for child events) */}
+                  {parentBranchIndex !== -1 && (
+                    <div style={{
+                      position: 'absolute',
+                      left: `${event.position}%`,
+                      top: branchStartTop,
+                      width: '2px',
+                      height: `${(30 + (index * 8)) - (30 + (parentBranchIndex * 8))}%`, // Connect to parent branch
+                      background: isSelected 
+                        ? 'linear-gradient(180deg, rgba(255, 102, 0, 1), rgba(255, 102, 0, 0.8))' 
+                        : 'linear-gradient(180deg, rgba(255, 102, 0, 0.8), rgba(255, 102, 0, 0.4))',
+                      zIndex: 5,
+                      transform: 'translateX(-50%)',
+                      boxShadow: isSelected ? '0 0 8px rgba(255, 102, 0, 0.8)' : 'none'
+                    }}></div>
+                  )}
+
+                  {/* Connection node on parent branch (for child events) */}
+                  {parentBranchIndex !== -1 && (
+                    <div 
+                      style={{
+                        position: 'absolute',
+                        left: `${event.position}%`,
+                        top: branchStartTop,
+                        width: `${4 * Math.min(zoomLevel, 2)}px`,
+                        height: `${4 * Math.min(zoomLevel, 2)}px`,
+                        borderRadius: '50%',
+                        background: 'rgba(255, 102, 0, 1)',
+                        boxShadow: `0 0 ${8 * zoomLevel}px rgba(255, 102, 0, 0.8)`,
+                        border: '2px solid rgba(255, 255, 255, 0.5)',
+                        zIndex: 9,
+                        transform: 'translate(-50%, -50%)'
+                      }}
+                    />
+                  )}
 
                   {/* Horizontal branch line - extends to end of timeline */}
                   <div 
@@ -1347,27 +1500,29 @@ function App() {
                     </div>
                   </div>
 
-                  {/* Event Node on main line */}
-                  <div 
-                    style={{
-                      position: 'absolute',
-                      left: `${event.position}%`,
-                      top: '20%',
-                      width: `${6 * Math.min(zoomLevel, 2)}px`,
-                      height: `${6 * Math.min(zoomLevel, 2)}px`,
-                      borderRadius: '50%',
-                      background: isSelected ? 'rgba(255, 102, 0, 1)' : 'rgba(255, 102, 0, 1)',
-                      boxShadow: isSelected 
-                        ? `0 0 ${20 * zoomLevel}px rgba(255, 102, 0, 1)` 
-                        : `0 0 ${12 * zoomLevel}px rgba(255, 102, 0, 0.8)`,
-                      border: isSelected ? '3px solid rgba(255, 255, 255, 0.8)' : '2px solid rgba(255, 255, 255, 0.3)',
-                      zIndex: 10,
-                      cursor: 'pointer',
-                      animation: isSelected ? 'nixiePulse 2s infinite' : 'nixiePulse 4s infinite',
-                      transform: 'translate(-50%, -50%)'
-                    }}
-                    onClick={() => handleEventClick(eventId)}
-                  />
+                  {/* Event Node on main line (only if not branching from another event) */}
+                  {parentBranchIndex === -1 && (
+                    <div 
+                      style={{
+                        position: 'absolute',
+                        left: `${event.position}%`,
+                        top: '20%',
+                        width: `${6 * Math.min(zoomLevel, 2)}px`,
+                        height: `${6 * Math.min(zoomLevel, 2)}px`,
+                        borderRadius: '50%',
+                        background: isSelected ? 'rgba(255, 102, 0, 1)' : 'rgba(255, 102, 0, 1)',
+                        boxShadow: isSelected 
+                          ? `0 0 ${20 * zoomLevel}px rgba(255, 102, 0, 1)` 
+                          : `0 0 ${12 * zoomLevel}px rgba(255, 102, 0, 0.8)`,
+                        border: isSelected ? '3px solid rgba(255, 255, 255, 0.8)' : '2px solid rgba(255, 255, 255, 0.3)',
+                        zIndex: 10,
+                        cursor: 'pointer',
+                        animation: isSelected ? 'nixiePulse 2s infinite' : 'nixiePulse 4s infinite',
+                        transform: 'translate(-50%, -50%)'
+                      }}
+                      onClick={() => handleEventClick(eventId)}
+                    />
+                  )}
                 </div>
                 )
               })}
