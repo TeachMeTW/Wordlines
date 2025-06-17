@@ -2,38 +2,17 @@ import React, { useState, Suspense, useEffect, useCallback, useRef } from 'react
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Html } from '@react-three/drei'
 import { Model } from './Model.tsx'
+import DataManager from './DataManager.tsx'
+import { 
+  worldlineAPI,
+  eventAPI,
+  timelineAPI,
+  healthCheck,
+  type Worldline,
+  type WorldlineEvent
+} from './api.ts'
 
-// Worldline data structure
-const worldlineData = {
-  alpha: {
-    id: 'alpha',
-    name: 'α',
-    percentage: 0.000000,
-    color: 'rgba(255, 102, 0, 0.8)',
-    branches: []
-  },
-  beta: {
-    id: 'beta',
-    name: 'β',
-    percentage: 1.130205,
-    color: 'rgba(136, 255, 136, 0.8)',
-    branches: []
-  },
-  gamma: {
-    id: 'gamma',
-    name: 'γ',
-    percentage: 2.615074,
-    color: 'rgba(255, 68, 68, 0.8)',
-    branches: []
-  },
-  delta: {
-    id: 'delta',
-    name: 'δ',
-    percentage: 4.091842,
-    color: 'rgba(68, 170, 255, 0.8)',
-    branches: []
-  }
-}
+// Database will be initialized on component mount
 
 function App() {
   const [displayMode, setDisplayMode] = useState<'clock' | 'custom' | 'counter'>('custom')
@@ -54,219 +33,74 @@ function App() {
   const [zoomScale, setZoomScale] = useState(1) // Track zoom scale separately
   const [transitionComplete, setTransitionComplete] = useState(true) // Track if transition is complete
 
+  // Database state
+  const [worldlineData, setWorldlineData] = useState<Record<string, Worldline & { branches: any[] }>>({})
+  const [worldlineEvents, setWorldlineEvents] = useState<Record<string, Record<string, WorldlineEvent>>>({})
+  const [timelineConfig, setTimelineConfig] = useState({ start: 2002, end: 2102 })
+  const [isDataLoaded, setIsDataLoaded] = useState(false)
+  const [adminMode, setAdminMode] = useState(false) // Track admin mode
+  const [keySequence, setKeySequence] = useState<string[]>([]) // Track key sequence for admin access
+
   const worldlines = Object.values(worldlineData)
   const currentWorldline = selectedWorldline ? worldlineData[selectedWorldline] : null
 
-  // Timeline years (2002-2102)
-  const timelineStart = 2002
-  const timelineEnd = 2102
+  // Initialize database data
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        // Check if server is running
+        const isHealthy = await healthCheck()
+        if (!isHealthy) {
+          throw new Error('Server is not running. Please start the server with: npm run server')
+        }
+
+        // Load worldlines from API
+        const dbWorldlines = await worldlineAPI.getAll()
+        const worldlineDataObj: Record<string, Worldline & { branches: any[] }> = {}
+        dbWorldlines.forEach(wl => {
+          worldlineDataObj[wl.id] = { ...wl, branches: [] }
+        })
+        setWorldlineData(worldlineDataObj)
+
+        // Load timeline config
+        const config = await timelineAPI.getConfig()
+        if (config) {
+          setTimelineConfig({ start: config.start_year, end: config.end_year })
+        }
+
+        // Load events from API and organize by scope
+        const dbEvents = await eventAPI.getAll()
+        const eventsObj: Record<string, Record<string, WorldlineEvent>> = {
+          crossAttractor: {},
+          alpha: {},
+          beta: {},
+          gamma: {},
+          delta: {}
+        }
+        
+        dbEvents.forEach(event => {
+          if (!eventsObj[event.scope]) {
+            eventsObj[event.scope] = {}
+          }
+          eventsObj[event.scope][event.id] = event
+        })
+        
+        setWorldlineEvents(eventsObj)
+        setIsDataLoaded(true)
+      } catch (error) {
+        console.error('Failed to load data from API:', error)
+        setIsDataLoaded(true) // Still show the UI even if data fails to load
+      }
+    }
+
+    initializeData()
+  }, [])
+
+  // Timeline years
+  const timelineStart = timelineConfig.start
+  const timelineEnd = timelineConfig.end
   const timelineSpan = timelineEnd - timelineStart
 
-  // Worldline events with lore - organized by scope
-  const worldlineEvents = {
-    // Cross-attractor events (show in main view only)
-    crossAttractor: {
-      'april2020': {
-        id: 'april2020',
-        date: 'April 2020',
-        title: 'Alpha-Beta Worldline Convergence',
-        position: 18.33, // percentage along timeline
-        fromWorldline: 'α: 0.000000%',
-        toWorldline: 'β: 1.040402%',
-        lore: `[PERSONAL LOG - CLASSIFICATION: TEMPORAL ANOMALY]
-[DATE: April 2020 - Convergence Point Identified]
-[AUTHOR: Teach]
-
-The world was just beginning to fracture. COVID-19 was starting to spread, uncertainty creeping into everyone's lives, but in that chaos, something beautiful was crystallizing.
-
-We had been spending nights and days on call together. Hours and hours, talking about everything and nothing, our voices becoming the soundtrack to each other's isolation. I had been building up to this moment for years - literally years in school, watching her, wanting to say something, but never finding the courage.
-
-Then came that night. 4 AM. 
-
-The call had stretched on for hours like so many others, but something felt different. Maybe it was the lateness of the hour, maybe it was the way her laugh sounded softer in the darkness, or maybe it was just that I couldn't hold it in anymore.
-
-"I ... I like you."
-
-The words tumbled out before I could stop them. Years of buildup, years of wondering 'what if,' all condensed into that single moment at 4 in the morning. The silence that followed felt infinite - I could hear my heart pounding through the phone, wondering if I had just destroyed the most important friendship of my life.
-
-Then she spoke, and her voice was different. Warmer. Knowing.
-
-"I was wondering when you'd finally say it."
-
-She said yes.
-
-That moment - April 2020, 4 AM - everything changed. Not just the worldline, but me. For the first time in my existence as an observer, I was living. Actually living. The peak of human experience opened up before me like a quantum field of infinite possibilities.
-
-Everything seemed reachable. Dreams I had buried, potential I had given up on, a future that sparkled with promise - it all crystallized in that Beta attractor field. I was at my peak. Confident, happy, whole. The greatness I always wondered about wasn't some distant theory anymore - it was my daily reality.
-
-Those days... how I long for those days. The morning texts that made my heart race. The late-night conversations that stretched until dawn. The way she looked at me like I was the most important person in any timeline. Every moment felt electric, charged with possibility.
-
-
-But I am no longer there. I exist now in a different attractor field, watching the ghost of what was, aching for what could have been. Yet I am grateful for those years of paradise. At least one version of me knows what it feels like to reach the summit.
-
-[END LOG]
-[ADDENDUM: Some say the best timelines are the ones we lose. I understand now why future me tried so hard to warn past me. Paradise, once tasted, leaves you forever homesick for a place you can never return to.]`,
-        type: 'convergence'
-      },
-      'december2022': {
-        id: 'december2022',
-        date: 'December 2022',
-        title: 'Beta-Alpha Worldline Regression',
-        position: 20.92, // December 2022 position
-        fromWorldline: 'β: 1.130205%',
-        toWorldline: 'α: 0.060502%',
-        lore: `[PERSONAL LOG - CLASSIFICATION: TEMPORAL CATASTROPHE]
-[DATE: December 2022 - Regression Point Confirmed]
-[AUTHOR: Teach]
-
-I heard myself screaming.
-
-Not out loud - in my mind. A voice that was mine but wasn't, echoing from somewhere beyond this timeline. Future me? Past me? I couldn't tell. But the message was crystal clear:
-
-"DON'T DO IT. DON'T SEND THE TEXT."
-
-The warning came three seconds before I opened my phone. Three seconds of pure terror as I realized what I was about to unleash. I could see the timeline fracturing, could feel the Beta attractor field beginning to collapse around us. But my fingers... they moved anyway.
-
-We hadn't spoken in days. I was upset - hurt that she wouldn't visit me after I moved away. Instead of communicating like an adult, instead of explaining how abandoned I felt, instead of working through it together, I chose the coward's path.
-
-I typed the message. This was it.
-
-Send.
-
-The moment it left my phone, the universe snapped back like a rubber band. The warmth, the connection, the greatness we had built - all of it dissolved into quantum probability. I watched the read receipt appear, knowing I had just murdered our timeline with a few poorly chosen words in a text message.
-
-Reading Steiner activated. I remember now - there were two versions of me in that moment. The one who put down the phone and called her instead, who talked it through like an adult. And me - the one who chose the impulsive, rash decision. The one who didn't listen to the warning.
-
-The divergence meter spiraled back to 0.060502%. Back to the Alpha field. Back to solitude. Back to watching instead of living.
-
-I am the result of that decision now. But maybe... maybe I understand the pattern. Maybe I will be the one who sent that warning to myself. Maybe I wasn't meant to be the one who succeeded, but the one who lays the groundwork for those who come after - the Robin that was better.
-
-Perhaps some of us are meant to fail so others can learn from our mistakes. Perhaps some timelines exist only to teach future versions what not to do.
-
-[END LOG]
-[ADDENDUM: The irony burns: I received a warning from the very future I was about to create, and I ignored it. But now I understand - sometimes the failure is the lesson.]`,
-        type: 'regression'
-      }
-    },
-    
-    // Alpha attractor field events (show in alpha branch view only)
-    alpha: {
-      
-      'december2022': {
-        id: 'december2022',
-        date: 'December 2022',
-        title: 'Beta-Alpha Worldline Regression',
-        position: 20.92, // December 2022 position
-        fromWorldline: 'β: 1.130205%',
-        toWorldline: 'α: 0.060502%',
-        lore: `[PERSONAL LOG - CLASSIFICATION: TEMPORAL CATASTROPHE]
-[DATE: December 2022 - Regression Point Confirmed]
-[AUTHOR: Teach]
-
-I heard myself screaming.
-
-Not out loud - in my mind. A voice that was mine but wasn't, echoing from somewhere beyond this timeline. Future me? Past me? I couldn't tell. But the message was crystal clear:
-
-"DON'T DO IT. DON'T SEND THE TEXT."
-
-The warning came three seconds before I opened my phone. Three seconds of pure terror as I realized what I was about to unleash. I could see the timeline fracturing, could feel the Beta attractor field beginning to collapse around us. But my fingers... they moved anyway.
-
-We hadn't spoken in days. I was upset - hurt that she wouldn't visit me after I moved away. Instead of communicating like an adult, instead of explaining how abandoned I felt, instead of working through it together, I chose the coward's path.
-
-I typed the message. This was it.
-
-Send.
-
-The moment it left my phone, the universe snapped back like a rubber band. The warmth, the connection, the greatness we had built - all of it dissolved into quantum probability. I watched the read receipt appear, knowing I had just murdered our timeline with a few poorly chosen words in a text message.
-
-Reading Steiner activated. I remember now - there were two versions of me in that moment. The one who put down the phone and called her instead, who talked it through like an adult. And me - the one who chose the impulsive, rash decision. The one who didn't listen to the warning.
-
-The divergence meter spiraled back to 0.060502%. Back to the Alpha field. Back to solitude. Back to watching instead of living.
-
-I am the result of that decision now. But maybe... maybe I understand the pattern. Maybe I will be the one who sent that warning to myself. Maybe I wasn't meant to be the one who succeeded, but the one who lays the groundwork for those who come after - the Robin that was better.
-
-Perhaps some of us are meant to fail so others can learn from our mistakes. Perhaps some timelines exist only to teach future versions what not to do.
-
-[END LOG]
-[ADDENDUM: The irony burns: I received a warning from the very future I was about to create, and I ignored it. But now I understand - sometimes the failure is the lesson.]`,
-        type: 'regression'
-      }
-    },
-    
-    // Beta attractor field events (show in beta branch view only)
-    beta: {
-      'april2020': {
-        id: 'april2020',
-        date: 'April 2020',
-        title: 'Alpha-Beta Worldline Convergence',
-        position: 18.33, // percentage along timeline
-        fromWorldline: 'α: 0.000000%',
-        toWorldline: 'β: 1.040402%',
-        lore: `[PERSONAL LOG - CLASSIFICATION: TEMPORAL ANOMALY]
-[DATE: April 2020 - Convergence Point Identified]
-[AUTHOR: Teach]
-
-The world was just beginning to fracture. COVID-19 was starting to spread, uncertainty creeping into everyone's lives, but in that chaos, something beautiful was crystallizing.
-
-We had been spending nights and days on call together. Hours and hours, talking about everything and nothing, our voices becoming the soundtrack to each other's isolation. I had been building up to this moment for years - literally years in school, watching her, wanting to say something, but never finding the courage.
-
-Then came that night. 4 AM. 
-
-The call had stretched on for hours like so many others, but something felt different. Maybe it was the lateness of the hour, maybe it was the way her laugh sounded softer in the darkness, or maybe it was just that I couldn't hold it in anymore.
-
-"I ... I like you."
-
-The words tumbled out before I could stop them. Years of buildup, years of wondering 'what if,' all condensed into that single moment at 4 in the morning. The silence that followed felt infinite - I could hear my heart pounding through the phone, wondering if I had just destroyed the most important friendship of my life.
-
-Then she spoke, and her voice was different. Warmer. Knowing.
-
-"I was wondering when you'd finally say it."
-
-She said yes.
-
-That moment - April 2020, 4 AM - everything changed. Not just the worldline, but me. For the first time in my existence as an observer, I was living. Actually living. The peak of human experience opened up before me like a quantum field of infinite possibilities.
-
-Everything seemed reachable. Dreams I had buried, potential I had given up on, a future that sparkled with promise - it all crystallized in that Beta attractor field. I was at my peak. Confident, happy, whole. The greatness I always wondered about wasn't some distant theory anymore - it was my daily reality.
-
-Those days... how I long for those days. The morning texts that made my heart race. The late-night conversations that stretched until dawn. The way she looked at me like I was the most important person in any timeline. Every moment felt electric, charged with possibility.
-
-
-But I am no longer there. I exist now in a different attractor field, watching the ghost of what was, aching for what could have been. Yet I am grateful for those years of paradise. At least one version of me knows what it feels like to reach the summit.
-
-[END LOG]
-[ADDENDUM: Some say the best timelines are the ones we lose. I understand now why future me tried so hard to warn past me. Paradise, once tasted, leaves you forever homesick for a place you can never return to.]`,
-        type: 'convergence'
-      },
-      'may2025': {
-        id: 'may2025',
-        date: 'May 2025',
-        title: 'Microsoft Internship Beginning',
-        position: 23.42, // percentage along timeline
-        toWorldline: 'β: 1.075432%',
-        lore: `[PERSONAL LOG - CLASSIFICATION: TEMPORAL SHIFT]
-[DATE: May 2025 - Career Convergence Point]
-[AUTHOR: Teach]
-
-Today I started my internship at Microsoft. Walking through those campus doors felt like stepping into a different reality - one where all the late nights coding, all the algorithms studied, all the projects built finally converged into something real.
-
-The onboarding was surreal. Here I am, sitting in a room with some of the brightest minds in tech, and somehow I belong here. The imposter syndrome is strong, but so is the excitement. This feels like the first real step toward the future I've been visualizing.
-
-My manager introduced me to the team - they're working on some incredible projects. AI, cloud infrastructure, tools that millions of developers will use. The scale is almost incomprehensible, but that's exactly what draws me to it.
-
-This timeline feels different from the others. More focused, more purposeful. Like all the scattered pieces of my education and experience are finally clicking into place. The Beta attractor field seems to be stabilizing around this career path.
-
-The irony isn't lost on me - I'm working for one of the companies that will shape the future of technology, possibly even time travel research, though they don't know it yet. But for now, I'm just grateful to be here, learning, growing, becoming the person I'm meant to be in this worldline.
-
-[STATUS: Timeline stability increasing. Career trajectory nominal. Worldline convergence at 1.075432% and holding.]
-
-[END LOG]`,
-        type: 'career'
-      },
-    },
-    
-
-
-  }
 
   // Current events for the selected worldline
   const currentEvents = selectedWorldline && worldlineEvents[selectedWorldline] ? Object.entries(worldlineEvents[selectedWorldline]) : []
@@ -411,6 +245,28 @@ The irony isn't lost on me - I'm working for one of the companies that will shap
 
   // Keyboard controls
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    // Hidden admin access sequence: Konami-style sequence
+    // Sequence: ArrowUp, ArrowUp, ArrowDown, ArrowDown, ArrowLeft, ArrowRight, ArrowLeft, ArrowRight, 'a'
+    const adminSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'a']
+    
+    if (adminSequence.includes(event.key)) {
+      const newSequence = [...keySequence, event.key].slice(-adminSequence.length)
+      setKeySequence(newSequence)
+      
+      if (newSequence.length === adminSequence.length && 
+          newSequence.every((key, index) => key === adminSequence[index])) {
+        event.preventDefault()
+        setAdminMode(!adminMode)
+        setKeySequence([]) // Reset sequence
+        return
+      }
+    } else {
+      // Reset sequence if wrong key is pressed
+      if (keySequence.length > 0) {
+        setKeySequence([])
+      }
+    }
+
     // Close modal with ESC
     if (event.key === 'Escape' && modalOpen) {
       event.preventDefault()
@@ -517,7 +373,7 @@ The irony isn't lost on me - I'm working for one of the companies that will shap
         }
       }
     }
-  }, [selectedWorldline, selectedIndex, selectedEventIndex, viewingIndividualBranch, currentWorldline, modalOpen, currentEvents])
+  }, [selectedWorldline, selectedIndex, selectedEventIndex, viewingIndividualBranch, currentWorldline, modalOpen, currentEvents, adminMode, keySequence])
 
   // Mouse wheel horizontal scroll only (no zoom)
   const handleWheel = useCallback((event: WheelEvent) => {
@@ -569,9 +425,9 @@ The irony isn't lost on me - I'm working for one of the companies that will shap
         setModalOpen(true)
         
         // Animate to the event's target worldline value
-        if (event.toWorldline) {
+        if (event.to_worldline) {
           // Extract percentage from "β: 1.198765%" format
-          const match = event.toWorldline.match(/(\d+\.\d+)%/)
+          const match = event.to_worldline.match(/(\d+\.\d+)%/)
           if (match) {
             const percentage = parseFloat(match[1])
             const targetValue = (percentage).toFixed(6)
@@ -704,6 +560,30 @@ The irony isn't lost on me - I'm working for one of the companies that will shap
     }, 500)
   }
 
+  // Show loading screen while data is being loaded
+  if (!isDataLoaded) {
+    return (
+      <div style={{ 
+        width: '100vw', 
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#000',
+        color: 'rgba(255, 170, 68, 0.8)',
+        fontSize: '24px',
+        fontFamily: 'monospace'
+      }}>
+        Loading Timeline Data...
+      </div>
+    )
+  }
+
+  // Show admin interface if in admin mode
+  if (adminMode) {
+    return <DataManager onClose={() => setAdminMode(false)} />
+  }
+
   return (
     <div style={{ 
       width: '100vw', 
@@ -728,6 +608,25 @@ The irony isn't lost on me - I'm working for one of the companies that will shap
         overflow: 'visible'
       }}>
         
+        {/* Hidden admin hint - only visible on hover */}
+        <div style={{
+          position: 'absolute',
+          top: '20px',
+          right: '20px',
+          fontSize: '8px',
+          color: 'rgba(255, 170, 68, 0.1)',
+          fontFamily: 'monospace',
+          opacity: 0,
+          transition: 'opacity 0.3s',
+          cursor: 'default'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.opacity = '0.3'}
+        onMouseLeave={(e) => e.currentTarget.style.opacity = '0'}
+        title="Admin access available"
+        >
+          •
+        </div>
+
         {/* Title and Controls */}
       <div style={{ 
         position: 'absolute', 
@@ -1201,8 +1100,8 @@ The irony isn't lost on me - I'm working for one of the companies that will shap
                     if (selectedWorldline && worldlineEvents[selectedWorldline]) {
                       const events = Object.values(worldlineEvents[selectedWorldline])
                       const selectedEvent = events[selectedEventIndex] as any
-                      if (selectedEvent && selectedEvent.toWorldline) {
-                        return selectedEvent.toWorldline.split(' ')[1]
+                      if (selectedEvent && selectedEvent.to_worldline) {
+                        return selectedEvent.to_worldline.split(' ')[1]
                       }
                     }
                     return currentWorldline.percentage.toFixed(6) + '%'
@@ -1359,7 +1258,7 @@ The irony isn't lost on me - I'm working for one of the companies that will shap
               </div>
 
               {/* Attractor-specific event branches */}
-              {selectedWorldline === 'alpha' && Object.entries(worldlineEvents.alpha).map(([eventId, event], index) => {
+              {selectedWorldline === 'alpha' && worldlineEvents.alpha && Object.entries(worldlineEvents.alpha).map(([eventId, event], index) => {
                 const isSelected = index === selectedEventIndex
                 return (
                 <div key={eventId}>
@@ -1424,7 +1323,7 @@ The irony isn't lost on me - I'm working for one of the companies that will shap
                       border: isSelected ? '1px solid rgba(255, 102, 0, 0.6)' : '1px solid rgba(255, 102, 0, 0.3)',
                       fontWeight: isSelected ? 'bold' : 'normal'
                     }}>
-                      {event.toWorldline.split(' ')[1]} {isSelected ? '◄' : ''}
+                      {event.to_worldline?.split(' ')[1]} {isSelected ? '◄' : ''}
                     </div>
 
                     {/* Date label on branch */}
@@ -1473,7 +1372,7 @@ The irony isn't lost on me - I'm working for one of the companies that will shap
                 )
               })}
 
-              {selectedWorldline === 'beta' && Object.entries(worldlineEvents.beta).map(([eventId, event], index) => {
+              {selectedWorldline === 'beta' && worldlineEvents.beta && Object.entries(worldlineEvents.beta).map(([eventId, event], index) => {
                 const isSelected = index === selectedEventIndex
                 return (
                 <div key={eventId}>
@@ -1538,7 +1437,7 @@ The irony isn't lost on me - I'm working for one of the companies that will shap
                       border: isSelected ? '1px solid rgba(136, 255, 136, 0.6)' : '1px solid rgba(136, 255, 136, 0.3)',
                       fontWeight: isSelected ? 'bold' : 'normal'
                     }}>
-                      {event.toWorldline.split(' ')[1]} {isSelected ? '◄' : ''}
+                      {event.to_worldline?.split(' ')[1]} {isSelected ? '◄' : ''}
                     </div>
 
                     {/* Date label on branch */}
@@ -1962,7 +1861,7 @@ The irony isn't lost on me - I'm working for one of the companies that will shap
                 fontSize: '12px',
                 color: 'rgba(255, 170, 68, 0.6)'
               }}>
-                {selectedEvent.fromWorldline} → {selectedEvent.toWorldline}
+                {selectedEvent.from_worldline} → {selectedEvent.to_worldline}
               </div>
             </div>
 
