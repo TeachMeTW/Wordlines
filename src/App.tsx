@@ -730,11 +730,11 @@ function App() {
           <div>WORLDLINE CONVERGENCE ANALYSIS</div>
           <div style={{ fontSize: '12px', marginTop: '10px', color: 'rgba(255, 170, 68, 0.7)' }}>
             {viewingIndividualBranch ? (
-              <>Viewing individual worldline | BACKSPACE to return | ←→ to scroll timeline | Drag or Shift+wheel | +/- to zoom</>
+              <>Viewing individual worldline | BACKSPACE to return | ←→ to scroll timeline | Drag to scroll | +/- to zoom</>
             ) : selectedWorldline ? (
               <>Viewing {currentWorldline?.name} attractor field branches | ↑↓ to select branch | ←→ to scroll timeline | ENTER to view details | BACKSPACE to return | +/- to zoom</>
             ) : (
-              <>↑↓ to navigate | ←→ to scroll timeline | ENTER to select | Drag to scroll | +/- to zoom | Shift+wheel for horizontal</>
+              <>↑↓ to navigate worldlines (◄ shows selection) | ←→ to scroll timeline | ENTER to view worldline events | Drag to scroll | +/- to zoom</>
             )}
           </div>
         </div>
@@ -1073,6 +1073,119 @@ function App() {
                 }}
               >
                 DEC 2022: β→α REGRESSION
+              </div>
+
+              {/* Genesis Point - All Attractor Fields Convergence at June 2002 */}
+              {/* Alpha to Beta connection */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  left: '0.5%', // June 2002 position: 0.5% on timeline
+                  top: '20%', // Alpha worldline position
+                  width: '3px',
+                  height: '15%', // Distance between alpha and beta
+                  background: 'linear-gradient(180deg, rgba(255, 102, 0, 0.9), rgba(136, 255, 136, 0.9))',
+                  boxShadow: `0 0 ${8 * zoomLevel}px rgba(255, 255, 255, 0.8)`,
+                  zIndex: 10,
+                  animation: 'connectionPulse 2s infinite',
+                  cursor: 'pointer'
+                }}
+                onClick={() => handleEventClick('june2002')}
+              >
+              </div>
+
+              {/* Alpha to Gamma connection */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  left: '0.5%',
+                  top: '20%', // Alpha worldline position
+                  width: '3px',
+                  height: '30%', // Distance from alpha (20%) to gamma (50%) = 30%
+                  background: 'linear-gradient(180deg, rgba(255, 102, 0, 0.9), rgba(255, 68, 68, 0.9))',
+                  boxShadow: `0 0 ${8 * zoomLevel}px rgba(255, 255, 255, 0.8)`,
+                  zIndex: 10,
+                  animation: 'connectionPulse 2.5s infinite',
+                  cursor: 'pointer'
+                }}
+                onClick={() => handleEventClick('june2002')}
+              >
+              </div>
+
+              {/* Alpha to Delta connection */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  left: '0.5%',
+                  top: '20%', // Alpha worldline position
+                  width: '3px',
+                  height: '45%', // Distance from alpha (20%) to delta (65%) = 45%
+                  background: 'linear-gradient(180deg, rgba(255, 102, 0, 0.9), rgba(68, 170, 255, 0.9))',
+                  boxShadow: `0 0 ${8 * zoomLevel}px rgba(255, 255, 255, 0.8)`,
+                  zIndex: 10,
+                  animation: 'connectionPulse 3s infinite',
+                  cursor: 'pointer'
+                }}
+                onClick={() => handleEventClick('june2002')}
+              >
+              </div>
+
+              {/* Central Genesis Node */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  left: '0.5%',
+                  top: '42.5%', // Middle of all worldlines (20% + 65%) / 2 = 42.5%
+                  transform: 'translate(-50%, -50%)',
+                  width: `${16 * Math.min(zoomLevel, 2)}px`,
+                  height: `${16 * Math.min(zoomLevel, 2)}px`,
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(255, 255, 255, 1), rgba(255, 170, 68, 0.8))',
+                  boxShadow: `0 0 ${12 * zoomLevel}px rgba(255, 255, 255, 1), 0 0 ${24 * zoomLevel}px rgba(255, 170, 68, 0.6)`,
+                  border: '3px solid rgba(255, 255, 255, 0.8)',
+                  zIndex: 15,
+                  cursor: 'pointer',
+                  animation: 'genesisNodePulse 1.5s infinite',
+                  transition: 'all 0.3s ease'
+                }}
+                onClick={() => handleEventClick('june2002')}
+              >
+              </div>
+
+              {/* start Event Label */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  left: '0.5%',
+                  top: '8%',
+                  transform: 'translateX(-50%)',
+                  color: 'rgba(255, 255, 255, 1)',
+                  fontSize: `${11 * Math.min(zoomLevel, 1.5)}px`,
+                  fontFamily: 'monospace',
+                  textShadow: '0 0 8px rgba(255, 255, 255, 0.8)',
+                  whiteSpace: 'nowrap',
+                  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                  padding: '4px 8px',
+                  borderRadius: '6px',
+                  border: '2px solid rgba(255, 255, 255, 0.5)',
+                  zIndex: 16,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  fontWeight: 'bold'
+                }}
+                onClick={() => handleEventClick('june2002')}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.8)'
+                  e.currentTarget.style.color = 'rgba(255, 170, 68, 1)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.6)'
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.5)'
+                  e.currentTarget.style.color = 'rgba(255, 255, 255, 1)'
+                }}
+              >
+                Beginnings
               </div>
             </div>
           </div>
@@ -2407,7 +2520,7 @@ function App() {
                 fontSize: '18px',
                 textShadow: '0 0 8px rgba(255, 170, 68, 0.6)'
               }}>
-                Legal Disclaimer
+                Timeline Information
               </h2>
             </div>
 
@@ -2417,19 +2530,32 @@ function App() {
               fontSize: '14px',
               whiteSpace: 'pre-line'
             }}>
-              {`This is a fan project inspired by Steins;Gate.
+{`HOW TO USE THE TIMELINE:
 
-I do not own any rights to:
-• Steins;Gate intellectual property
-• Characters, concepts, or terminology from Steins;Gate
-• Music or audio files used in this project
-• Any other copyrighted material referenced
+WORLDLINES:
+• Four attractor fields: α (Alpha), β (Beta), γ (Gamma), δ (Delta)
+• Each represents different life paths and outcomes
+• Use ↑↓ arrows to navigate between worldlines
+• Press ENTER to view detailed events for that worldline
 
-All rights to Steins;Gate belong to 5pb./Nitroplus and their respective licensors.
+TIMELINE NODES:
+• Visible nodes on the timeline are MAJOR EVENTS
+• Click any node to view the event details and journal entries
+• These represent significant life moments and decisions
 
-This project is created for non-commercial, educational, and entertainment purposes only.
+DETAILED EVENTS:
+• Enter a specific worldline (ENTER) to view ALL events
+• Minor events are only visible within individual worldlines
+• Each worldline contains both major and minor life moments
+• Use ↑↓ to navigate through events, ENTER to read details
 
-Only the original stories and personal logs contained within this timeline are my own creative work.`}
+NAVIGATION:
+• ←→ arrows scroll the timeline horizontally
+• +/- keys zoom in/out for different time scales
+• Drag to scroll, BACKSPACE to return to main view
+
+LEGAL DISCLAIMER:
+This is a fan project inspired by Steins;Gate. All rights to Steins;Gate belong to 5pb./Nitroplus. Created for non-commercial, educational purposes only.`}
             </div>
 
             {/* Close Button */}

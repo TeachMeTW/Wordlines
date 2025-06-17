@@ -116,6 +116,40 @@ const migrateInitialData = () => {
   // Migrate events
   const events = [
     {
+      id: 'june2002',
+      date: 'June 2002',
+      title: 'Genesis Point - All Attractor Fields Convergence',
+      position: 0.5,
+      from_worldline: 'Quantum Void',
+      to_worldline: 'α, β, γ, δ: All Fields Connected',
+      lore: `[TEMPORAL LOG - CLASSIFICATION: GENESIS EVENT]
+[DATE: June 2002 - Universal Origin Point]
+[AUTHOR: System]
+
+This is when [REDACTED] was born.
+
+The beginning. The base of everything. Where the journey starts.
+
+At this moment, all attractor fields align at their origins:
+- Alpha (α): 0%
+- Beta (β): 1% 
+- Gamma (γ): 2%
+- Delta (δ): 4%
+
+From here, infinite possibilities branch outward. Every choice made, every path taken, every moment lived will shift the percentages and determine which reality becomes home.
+
+This is the foundation. The starting point from which all futures become accessible. Where potential becomes possibility, and possibility becomes reality.
+
+The rest is just... living.
+
+[STATUS: Timeline origin established]
+[OBSERVER: Ready]
+
+[END LOG]`,
+      type: 'genesis',
+      scope: 'crossAttractor'
+    },
+    {
       id: 'december2022',
       date: 'December 2022',
       title: 'Beta-Alpha Worldline Regression',
