@@ -302,6 +302,11 @@ function App() {
       }
     }
 
+    // If admin mode is active, don't handle any other keyboard events
+    if (adminMode) {
+      return
+    }
+
     // Close modal with ESC
     if (event.key === 'Escape' && modalOpen) {
       event.preventDefault()
@@ -537,8 +542,8 @@ function App() {
         
         // Animate to the event's target worldline value
         if (event.to_worldline) {
-          // Extract percentage from "β: 1.198765%" format
-          const match = event.to_worldline.match(/(\d+\.\d+)%/)
+          // Extract percentage from "β: 1.198765%" or "γ: 2.652042" format
+          const match = event.to_worldline.match(/(\d+\.\d+)%?/)
           if (match) {
             const percentage = parseFloat(match[1])
             const targetValue = (percentage).toFixed(6)
@@ -1529,22 +1534,93 @@ function App() {
 
               {selectedWorldline === 'beta' && worldlineEvents.beta && Object.entries(worldlineEvents.beta).map(([eventId, event], index) => {
                 const isSelected = index === selectedEventIndex
+                
+                // Check if this event branches from another event
+                let parentBranchIndex = -1
+                let branchStartTop = '20%' // Default to main beta line
+                
+                if (event.from_worldline) {
+                  // Find the parent event this branches from
+                  const parentEvents = Object.entries(worldlineEvents.beta)
+                  parentBranchIndex = parentEvents.findIndex(([parentId, parentEvent]) => {
+                    // Check direct ID match
+                    if (parentId === event.from_worldline || parentEvent.id === event.from_worldline) {
+                      return true
+                    }
+                    
+                    // Check if from_worldline contains the parentId
+                    if (event.from_worldline && event.from_worldline.includes(parentId)) {
+                      return true
+                    }
+                    
+                    // Check if from_worldline matches the parent's to_worldline format (e.g., "β: 1.130205%")
+                    if (parentEvent.to_worldline === event.from_worldline) {
+                      return true
+                    }
+                    
+                    return false
+                  })
+                  
+                  if (parentBranchIndex !== -1) {
+                    // Branch from the parent event's branch line instead of main line
+                    branchStartTop = `${30 + (parentBranchIndex * 8)}%`
+                  }
+                }
+                
                 return (
                 <div key={eventId}>
-                  {/* Vertical branch connection from main line */}
-                  <div style={{
-                    position: 'absolute',
-                    left: `${event.position}%`,
-                    top: '20%',
-                    width: '2px',
-                    height: `${10 + (index * 8)}%`, // Different heights for different branches
-                    background: isSelected 
-                      ? 'linear-gradient(180deg, rgba(136, 255, 136, 1), rgba(136, 255, 136, 0.8))' 
-                      : 'linear-gradient(180deg, rgba(136, 255, 136, 0.8), rgba(136, 255, 136, 0.4))',
-                    zIndex: 5,
-                    transform: 'translateX(-50%)',
-                    boxShadow: isSelected ? '0 0 8px rgba(136, 255, 136, 0.8)' : 'none'
-                  }}></div>
+                  {/* Vertical branch connection from main line (only if not branching from another event) */}
+                  {parentBranchIndex === -1 && (
+                    <div style={{
+                      position: 'absolute',
+                      left: `${event.position}%`,
+                      top: branchStartTop,
+                      width: '2px',
+                      height: `${10 + (index * 8)}%`, // Different heights for different branches
+                      background: isSelected 
+                        ? 'linear-gradient(180deg, rgba(136, 255, 136, 1), rgba(136, 255, 136, 0.8))' 
+                        : 'linear-gradient(180deg, rgba(136, 255, 136, 0.8), rgba(136, 255, 136, 0.4))',
+                      zIndex: 5,
+                      transform: 'translateX(-50%)',
+                      boxShadow: isSelected ? '0 0 8px rgba(136, 255, 136, 0.8)' : 'none'
+                    }}></div>
+                  )}
+
+                  {/* Vertical connection from parent branch to this branch (for child events) */}
+                  {parentBranchIndex !== -1 && (
+                    <div style={{
+                      position: 'absolute',
+                      left: `${event.position}%`,
+                      top: branchStartTop,
+                      width: '2px',
+                      height: `${(30 + (index * 8)) - (30 + (parentBranchIndex * 8))}%`, // Connect to parent branch
+                      background: isSelected 
+                        ? 'linear-gradient(180deg, rgba(136, 255, 136, 1), rgba(136, 255, 136, 0.8))' 
+                        : 'linear-gradient(180deg, rgba(136, 255, 136, 0.8), rgba(136, 255, 136, 0.4))',
+                      zIndex: 5,
+                      transform: 'translateX(-50%)',
+                      boxShadow: isSelected ? '0 0 8px rgba(136, 255, 136, 0.8)' : 'none'
+                    }}></div>
+                  )}
+
+                  {/* Connection node on parent branch (for child events) */}
+                  {parentBranchIndex !== -1 && (
+                    <div 
+                      style={{
+                        position: 'absolute',
+                        left: `${event.position}%`,
+                        top: branchStartTop,
+                        width: `${4 * Math.min(zoomLevel, 2)}px`,
+                        height: `${4 * Math.min(zoomLevel, 2)}px`,
+                        borderRadius: '50%',
+                        background: 'rgba(136, 255, 136, 1)',
+                        boxShadow: `0 0 ${8 * zoomLevel}px rgba(136, 255, 136, 0.8)`,
+                        border: '2px solid rgba(255, 255, 255, 0.5)',
+                        zIndex: 9,
+                        transform: 'translate(-50%, -50%)'
+                      }}
+                    />
+                  )}
 
                   {/* Horizontal branch line - extends to end of timeline */}
                   <div 
@@ -1616,27 +1692,216 @@ function App() {
                     </div>
                   </div>
 
-                  {/* Event Node on main line */}
+                  {/* Event Node on main line (only if not branching from another event) */}
+                  {parentBranchIndex === -1 && (
+                    <div 
+                      style={{
+                        position: 'absolute',
+                        left: `${event.position}%`,
+                        top: '20%',
+                        width: `${6 * Math.min(zoomLevel, 2)}px`,
+                        height: `${6 * Math.min(zoomLevel, 2)}px`,
+                        borderRadius: '50%',
+                        background: isSelected ? 'rgba(136, 255, 136, 1)' : 'rgba(136, 255, 136, 1)',
+                        boxShadow: isSelected 
+                          ? `0 0 ${20 * zoomLevel}px rgba(136, 255, 136, 1)` 
+                          : `0 0 ${12 * zoomLevel}px rgba(136, 255, 136, 0.8)`,
+                        border: isSelected ? '3px solid rgba(255, 255, 255, 0.8)' : '2px solid rgba(255, 255, 255, 0.3)',
+                        zIndex: 10,
+                        cursor: 'pointer',
+                        animation: isSelected ? 'nixiePulse 2s infinite' : 'nixiePulse 3.5s infinite',
+                        transform: 'translate(-50%, -50%)'
+                      }}
+                      onClick={() => handleEventClick(eventId)}
+                    />
+                  )}
+                </div>
+                )
+              })}
+
+              {selectedWorldline === 'gamma' && worldlineEvents.gamma && Object.entries(worldlineEvents.gamma).map(([eventId, event], index) => {
+                const isSelected = index === selectedEventIndex
+                
+                // Check if this event branches from another event
+                let parentBranchIndex = -1
+                let branchStartTop = '20%' // Default to main gamma line
+                
+                if (event.from_worldline) {
+                  // Find the parent event this branches from
+                  const parentEvents = Object.entries(worldlineEvents.gamma)
+                  parentBranchIndex = parentEvents.findIndex(([parentId, parentEvent]) => {
+                    // Check direct ID match
+                    if (parentId === event.from_worldline || parentEvent.id === event.from_worldline) {
+                      return true
+                    }
+                    
+                    // Check if from_worldline contains the parentId
+                    if (event.from_worldline && event.from_worldline.includes(parentId)) {
+                      return true
+                    }
+                    
+                    // Check if from_worldline matches the parent's to_worldline format (e.g., "γ: 2.000000%")
+                    if (parentEvent.to_worldline === event.from_worldline) {
+                      return true
+                    }
+                    
+                    return false
+                  })
+                  
+                  if (parentBranchIndex !== -1) {
+                    // Branch from the parent event's branch line instead of main line
+                    branchStartTop = `${30 + (parentBranchIndex * 8)}%`
+                  }
+                }
+                
+                return (
+                <div key={eventId}>
+                  {/* Vertical branch connection from main line (only if not branching from another event) */}
+                  {parentBranchIndex === -1 && (
+                    <div style={{
+                      position: 'absolute',
+                      left: `${event.position}%`,
+                      top: branchStartTop,
+                      width: '2px',
+                      height: `${10 + (index * 8)}%`, // Different heights for different branches
+                      background: isSelected 
+                        ? 'linear-gradient(180deg, rgba(255, 255, 136, 1), rgba(255, 255, 136, 0.8))' 
+                        : 'linear-gradient(180deg, rgba(255, 255, 136, 0.8), rgba(255, 255, 136, 0.4))',
+                      zIndex: 5,
+                      transform: 'translateX(-50%)',
+                      boxShadow: isSelected ? '0 0 8px rgba(255, 255, 136, 0.8)' : 'none'
+                    }}></div>
+                  )}
+
+                  {/* Vertical connection from parent branch to this branch (for child events) */}
+                  {parentBranchIndex !== -1 && (
+                    <div style={{
+                      position: 'absolute',
+                      left: `${event.position}%`,
+                      top: branchStartTop,
+                      width: '2px',
+                      height: `${(30 + (index * 8)) - (30 + (parentBranchIndex * 8))}%`, // Connect to parent branch
+                      background: isSelected 
+                        ? 'linear-gradient(180deg, rgba(255, 255, 136, 1), rgba(255, 255, 136, 0.8))' 
+                        : 'linear-gradient(180deg, rgba(255, 255, 136, 0.8), rgba(255, 255, 136, 0.4))',
+                      zIndex: 5,
+                      transform: 'translateX(-50%)',
+                      boxShadow: isSelected ? '0 0 8px rgba(255, 255, 136, 0.8)' : 'none'
+                    }}></div>
+                  )}
+
+                  {/* Connection node on parent branch (for child events) */}
+                  {parentBranchIndex !== -1 && (
+                    <div 
+                      style={{
+                        position: 'absolute',
+                        left: `${event.position}%`,
+                        top: branchStartTop,
+                        width: `${4 * Math.min(zoomLevel, 2)}px`,
+                        height: `${4 * Math.min(zoomLevel, 2)}px`,
+                        borderRadius: '50%',
+                        background: 'rgba(255, 255, 136, 1)',
+                        boxShadow: `0 0 ${8 * zoomLevel}px rgba(255, 255, 136, 0.8)`,
+                        border: '2px solid rgba(255, 255, 255, 0.5)',
+                        zIndex: 9,
+                        transform: 'translate(-50%, -50%)'
+                      }}
+                    />
+                  )}
+
+                  {/* Horizontal branch line - extends to end of timeline */}
                   <div 
                     style={{
                       position: 'absolute',
                       left: `${event.position}%`,
-                      top: '20%',
-                      width: `${6 * Math.min(zoomLevel, 2)}px`,
-                      height: `${6 * Math.min(zoomLevel, 2)}px`,
-                      borderRadius: '50%',
-                      background: isSelected ? 'rgba(136, 255, 136, 1)' : 'rgba(136, 255, 136, 1)',
+                      top: `${30 + (index * 8)}%`, // Different vertical positions for different branches
+                      width: `${100 - event.position}%`, // Extend to end of timeline
+                      height: `${2 * zoomLevel}px`,
+                      background: isSelected
+                        ? 'linear-gradient(90deg, rgba(255, 255, 136, 1), rgba(255, 255, 136, 0.8), rgba(255, 255, 136, 0.6), rgba(255, 255, 136, 0.5))'
+                        : 'linear-gradient(90deg, rgba(255, 255, 136, 1), rgba(255, 255, 136, 0.6), rgba(255, 255, 136, 0.4), rgba(255, 255, 136, 0.3))',
                       boxShadow: isSelected 
-                        ? `0 0 ${20 * zoomLevel}px rgba(136, 255, 136, 1)` 
-                        : `0 0 ${12 * zoomLevel}px rgba(136, 255, 136, 0.8)`,
-                      border: isSelected ? '3px solid rgba(255, 255, 255, 0.8)' : '2px solid rgba(255, 255, 255, 0.3)',
-                      zIndex: 10,
+                        ? `0 0 ${15 * zoomLevel}px rgba(255, 255, 136, 0.9)` 
+                        : `0 0 ${8 * zoomLevel}px rgba(255, 255, 136, 0.6)`,
+                      transform: 'translateY(-50%)',
+                      zIndex: 8,
                       cursor: 'pointer',
-                      animation: isSelected ? 'nixiePulse 2s infinite' : 'nixiePulse 3.5s infinite',
-                      transform: 'translate(-50%, -50%)'
+                      transition: 'all 0.3s ease',
+                      border: isSelected ? '1px solid rgba(255, 255, 136, 0.8)' : 'none'
                     }}
                     onClick={() => handleEventClick(eventId)}
-                  />
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = `0 0 ${12 * zoomLevel}px rgba(255, 255, 136, 0.9)`
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = isSelected 
+                        ? `0 0 ${15 * zoomLevel}px rgba(255, 255, 136, 0.9)` 
+                        : `0 0 ${8 * zoomLevel}px rgba(255, 255, 136, 0.6)`
+                    }}
+                  >
+                    {/* Branch percentage label - repositioned */}
+                    <div style={{
+                      position: 'absolute',
+                      left: '12%',
+                      top: `${-25 * zoomLevel}px`,
+                      color: isSelected ? 'rgba(255, 255, 136, 1)' : 'rgba(255, 255, 136, 0.9)',
+                      fontSize: `${10 * Math.min(zoomLevel, 1.5)}px`,
+                      fontFamily: 'monospace',
+                      textShadow: isSelected ? '0 0 8px rgba(255, 255, 136, 0.8)' : '0 0 4px rgba(255, 255, 136, 0.6)',
+                      whiteSpace: 'nowrap',
+                      backgroundColor: isSelected ? 'rgba(255, 255, 136, 0.2)' : 'rgba(0, 0, 0, 0.4)',
+                      padding: '2px 6px',
+                      borderRadius: '3px',
+                      border: isSelected ? '1px solid rgba(255, 255, 136, 0.6)' : '1px solid rgba(255, 255, 136, 0.3)',
+                      fontWeight: isSelected ? 'bold' : 'normal'
+                    }}>
+                      {event.to_worldline?.split(' ')[1]} {isSelected ? '◄' : ''}
+                    </div>
+
+                    {/* Date label on branch */}
+                    <div style={{
+                      position: 'absolute',
+                      left: '25%',
+                      top: `${-25 * zoomLevel}px`,
+                      color: isSelected ? 'rgba(255, 255, 136, 1)' : 'rgba(255, 255, 136, 0.9)',
+                      fontSize: `${9 * Math.min(zoomLevel, 1.5)}px`,
+                      fontFamily: 'monospace',
+                      textShadow: isSelected ? '0 0 8px rgba(255, 255, 136, 0.8)' : '0 0 6px rgba(255, 255, 136, 0.6)',
+                      whiteSpace: 'nowrap',
+                      backgroundColor: isSelected ? 'rgba(255, 255, 136, 0.2)' : 'rgba(0, 0, 0, 0.4)',
+                      padding: '2px 6px',
+                      borderRadius: '3px',
+                      border: isSelected ? '1px solid rgba(255, 255, 136, 0.6)' : '1px solid rgba(255, 255, 136, 0.3)',
+                      pointerEvents: 'none', // Prevent interference with branch click
+                      fontWeight: isSelected ? 'bold' : 'normal'
+                    }}>
+                      {event.date.toUpperCase()}
+                    </div>
+                  </div>
+
+                  {/* Event Node on main line (only if not branching from another event) */}
+                  {parentBranchIndex === -1 && (
+                    <div 
+                      style={{
+                        position: 'absolute',
+                        left: `${event.position}%`,
+                        top: '20%',
+                        width: `${6 * Math.min(zoomLevel, 2)}px`,
+                        height: `${6 * Math.min(zoomLevel, 2)}px`,
+                        borderRadius: '50%',
+                        background: isSelected ? 'rgba(255, 255, 136, 1)' : 'rgba(255, 255, 136, 1)',
+                        boxShadow: isSelected 
+                          ? `0 0 ${20 * zoomLevel}px rgba(255, 255, 136, 1)` 
+                          : `0 0 ${12 * zoomLevel}px rgba(255, 255, 136, 0.8)`,
+                        border: isSelected ? '3px solid rgba(255, 255, 255, 0.8)' : '2px solid rgba(255, 255, 255, 0.3)',
+                        zIndex: 10,
+                        cursor: 'pointer',
+                        animation: isSelected ? 'nixiePulse 2s infinite' : 'nixiePulse 3s infinite',
+                        transform: 'translate(-50%, -50%)'
+                      }}
+                      onClick={() => handleEventClick(eventId)}
+                    />
+                  )}
                 </div>
                 )
               })}
