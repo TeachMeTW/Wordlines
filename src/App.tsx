@@ -42,6 +42,7 @@ function App() {
   const [keySequence, setKeySequence] = useState<string[]>([]) // Track key sequence for admin access
   const [backgroundMusic, setBackgroundMusic] = useState<HTMLAudioElement | null>(null) // Background music
   const [badAudio, setBadAudio] = useState<HTMLAudioElement | null>(null) // Track bad.mp3 instance
+  const [infoModalOpen, setInfoModalOpen] = useState(false) // Track info modal
 
   const worldlines = Object.values(worldlineData)
   const currentWorldline = selectedWorldline ? worldlineData[selectedWorldline] : null
@@ -757,6 +758,39 @@ function App() {
           zIndex: 200
         }}>
           ZOOM: {zoomLevel.toFixed(1)}x
+        </div>
+
+        {/* Info button */}
+        <div 
+          style={{
+            position: 'fixed',
+            top: '70px',
+            right: '20px',
+            color: 'rgba(255, 170, 68, 0.9)',
+            fontSize: '14px',
+            fontFamily: 'monospace',
+            textShadow: '0 0 6px rgba(255, 170, 68, 0.4)',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: '8px 15px',
+            borderRadius: '6px',
+            border: '1px solid rgba(255, 170, 68, 0.3)',
+            whiteSpace: 'nowrap',
+            textAlign: 'center',
+            zIndex: 200,
+            cursor: 'pointer',
+            transition: 'all 0.3s ease'
+          }}
+          onClick={() => setInfoModalOpen(true)}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255, 170, 68, 0.2)'
+            e.currentTarget.style.borderColor = 'rgba(255, 170, 68, 0.6)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'
+            e.currentTarget.style.borderColor = 'rgba(255, 170, 68, 0.3)'
+          }}
+        >
+          INFO
         </div>
 
         {/* Main Worldlines View */}
@@ -2301,6 +2335,110 @@ function App() {
             }}>
               <button
                 onClick={closeModal}
+                style={{
+                  backgroundColor: 'rgba(255, 170, 68, 0.1)',
+                  border: '1px solid rgba(255, 170, 68, 0.5)',
+                  borderRadius: '6px',
+                  padding: '8px 20px',
+                  color: 'rgba(255, 170, 68, 0.9)',
+                  fontFamily: 'monospace',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 170, 68, 0.2)'
+                  e.currentTarget.style.borderColor = 'rgba(255, 170, 68, 0.8)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 170, 68, 0.1)'
+                  e.currentTarget.style.borderColor = 'rgba(255, 170, 68, 0.5)'
+                }}
+              >
+                CLOSE
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Info Modal */}
+      {infoModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px'
+        }}
+        onClick={() => setInfoModalOpen(false)}
+        >
+          <div style={{
+            backgroundColor: 'rgba(10, 20, 30, 0.95)',
+            border: '2px solid rgba(255, 170, 68, 0.5)',
+            borderRadius: '12px',
+            padding: '30px',
+            maxWidth: '500px',
+            width: '90%',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            fontFamily: 'monospace',
+            color: 'rgba(255, 170, 68, 0.9)',
+            boxShadow: '0 0 30px rgba(255, 170, 68, 0.3)',
+            backdropFilter: 'blur(10px)'
+          }}
+          onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div style={{
+              borderBottom: '1px solid rgba(255, 170, 68, 0.3)',
+              paddingBottom: '15px',
+              marginBottom: '20px'
+            }}>
+              <h2 style={{
+                margin: '0 0 10px 0',
+                color: 'rgba(255, 170, 68, 1)',
+                fontSize: '18px',
+                textShadow: '0 0 8px rgba(255, 170, 68, 0.6)'
+              }}>
+                Legal Disclaimer
+              </h2>
+            </div>
+
+            {/* Modal Content */}
+            <div style={{
+              lineHeight: '1.6',
+              fontSize: '14px',
+              whiteSpace: 'pre-line'
+            }}>
+              {`This is a fan project inspired by Steins;Gate.
+
+I do not own any rights to:
+• Steins;Gate intellectual property
+• Characters, concepts, or terminology from Steins;Gate
+• Music or audio files used in this project
+• Any other copyrighted material referenced
+
+All rights to Steins;Gate belong to 5pb./Nitroplus and their respective licensors.
+
+This project is created for non-commercial, educational, and entertainment purposes only.
+
+Only the original stories and personal logs contained within this timeline are my own creative work.`}
+            </div>
+
+            {/* Close Button */}
+            <div style={{
+              marginTop: '25px',
+              textAlign: 'center'
+            }}>
+              <button
+                onClick={() => setInfoModalOpen(false)}
                 style={{
                   backgroundColor: 'rgba(255, 170, 68, 0.1)',
                   border: '1px solid rgba(255, 170, 68, 0.5)',
