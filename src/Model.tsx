@@ -45,7 +45,7 @@ interface ModelProps {
   [key: string]: any
 }
 
-export function Model(props: ModelProps) {
+export const Model = React.memo((props: ModelProps) => {
   const { 
     displayMode = 'clock', 
     customValue = 0, 
@@ -72,7 +72,7 @@ export function Model(props: ModelProps) {
     if (displayMode === 'counter') {
       const timer = setInterval(() => {
         setCounter(prev => (prev + 1) % 100000000) // Reset at 8 digits max
-      }, 100) // Update every 100ms for faster counting
+      }, 500) // Update every 500ms instead of 100ms for better performance
       return () => clearInterval(timer)
     }
   }, [displayMode])
@@ -138,17 +138,6 @@ export function Model(props: ModelProps) {
   // Check if custom mode has a dot
   const hasCustomDot = displayMode === 'custom' && customValue.toString().includes('.')
 
-  // Debug logging
-  console.log(`Display Mode: ${displayMode}`)
-  console.log('Digits:', digits)
-  console.log('Has custom dot:', hasCustomDot)
-  if (displayMode === 'clock') {
-    console.log('Current time:', currentTime.toLocaleTimeString())
-  } else if (displayMode === 'custom') {
-    console.log('Custom value:', customValue)
-  } else if (displayMode === 'counter') {
-    console.log('Counter value:', counter)
-  }
 
   // Generic helper function to get material for any digit position
   const getMaterial = (baseNumber: number, digit: number) => {
@@ -209,170 +198,114 @@ export function Model(props: ModelProps) {
       <group rotation={[-Math.PI / 2, 0, 0]} scale={0.02}>
         <group rotation={[Math.PI / 2, 0, 0]}>
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial.geometry}
             material={materials.glass_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_1.geometry}
             material={materials.glass_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_2.geometry}
             material={materials.mesh_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_3.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_4.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_5.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_6.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_7.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_8.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_9.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_10.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_11.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_12.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_13.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_14.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_15.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_16.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_17.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_18.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_19.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_20.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_21.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_22.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_23.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_24.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_25.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_26.geometry}
             material={materials.display_mt}
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.defaultMaterial_27.geometry}
             material={materials.display_mt}
           />
@@ -2832,6 +2765,6 @@ export function Model(props: ModelProps) {
       </group>
     </group>
   )
-}
+})
 
 useGLTF.preload('/scene.gltf')

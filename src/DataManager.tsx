@@ -6,7 +6,7 @@ interface DataManagerProps {
   onClose?: () => void;
 }
 
-const DataManager: React.FC<DataManagerProps> = ({ onClose }) => {
+const DataManager: React.FC<DataManagerProps> = React.memo(({ onClose }) => {
   const [worldlines, setWorldlines] = useState<Worldline[]>([]);
   const [events, setEvents] = useState<WorldlineEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -541,6 +541,6 @@ const DataManager: React.FC<DataManagerProps> = ({ onClose }) => {
       )}
     </div>
   );
-};
+});
 
 export default DataManager;
