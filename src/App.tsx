@@ -758,6 +758,7 @@ function App() {
               <>↑↓ to navigate worldlines (◄ shows selection) | ←→ to scroll timeline | ENTER to see more worldlines | Drag to scroll | +/- to zoom</>
             )}
           </div>
+          <div style={{ fontSize: '8px', marginTop: '10px', color: 'rgba(255, 170, 68, 0.7)' }}>Disclaimer: Entries are fictional</div>
         </div>
 
         {/* Zoom indicator */}
