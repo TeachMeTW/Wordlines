@@ -2,7 +2,7 @@
 
 A personal project where I explore how my life could have turned out differently. Inspired by Steins;Gate (my favorite show), this is basically my coping/imagination self-fanfiction type of deal.
 
-I was wondering how my life could have turned out if I made different choices. So I built this timeline to explore different versions of my life.
+Entries are fictional.
 
 ## How to Use
 
@@ -16,8 +16,7 @@ I was wondering how my life could have turned out if I made different choices. S
 
 ```bash
 npm install
-npm run dev      # Frontend
-npm run server   # Backend (separate terminal)
+npm start
 ```
 
 ## Legal
